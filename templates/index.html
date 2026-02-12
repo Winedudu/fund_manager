@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>智能基金管家 Pro</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{
+    --bg:#0f172a; --card:#1e293b; --accent:#3b82f6; --accent-hover:#2563eb;
+    --up:#ef4444; --down:#22c55e; --text:#f1f5f9; --sub:#94a3b8;
+}
+body{
+    margin:0; font-family:'Segoe UI', Roboto, sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:var(--text); display:flex; flex-direction:column; align-items:center;
+    min-height:100vh; padding:20px;
+}
+h1{margin-bottom:20px; text-align:center;}
+input{padding:10px; margin:6px 0; width:100%; border-radius:6px; border:none; background:#334155; color:white;}
+button{padding:8px 14px; margin:5px 0; border:none; border-radius:6px; cursor:pointer; font-weight:600; background:var(--accent); color:white; transition:0.2s;}
+button:hover{background:var(--accent-hover);}
+.card{background:var(--card); padding:20px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4); margin-bottom:15px;}
+#loginPanel,#app{width:360px; max-width:95%;}
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px;}
+.stat-card{padding:15px; text-align:center; border-radius:10px; background:var(--card); box-shadow:0 6px 16px rgba(0,0,0,0.3);}
+.stat-title{font-size:13px; color:var(--sub);}
+.stat-value{font-size:18px; font-weight:600; margin-top:5px;}
+.up{color:var(--up);} .down{color:var(--down);}
+.fund-header{display:flex; justify-content:space-between; align-items:center;}
+.small{font-size:12px; color:var(--sub);}
+.chart-container{margin-top:10px;}
+.period-buttons button{background:#334155; margin-right:5px;}
+canvas{margin-top:8px;}
+</style>
+</head>
+<body>
+
+<h1>📊 智能基金管家 Pro</h1>
+
+<!-- 登录注册 -->
+<div id="loginPanel" class="card">
+    <h2 style="text-align:center;">用户登录 / 注册</h2>
+    <input id="username" placeholder="用户名">
+    <input id="password" type="password" placeholder="密码">
+    <button onclick="loginUser()">登录</button>
+    <button onclick="registerUser()">注册</button>
+</div>
+
+<!-- 主应用 -->
+<div id="app" style="display:none;">
+    <div class="card">
+        欢迎, <span id="userNameShow"></span>
+        <button style="float:right;" onclick="logoutUser()">登出</button>
+    </div>
+
+    <div class="grid" style="margin-top:15px;">
+        <div class="stat-card">
+            <div class="stat-title">总资产</div>
+            <div class="stat-value" id="totalAsset">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">总盈亏</div>
+            <div class="stat-value" id="totalProfit">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">收益率</div>
+            <div class="stat-value" id="totalPercent">0%</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>添加持仓</h2>
+        <input id="code" placeholder="基金代码">
+        <input id="price" placeholder="买入价格">
+        <input id="amount" placeholder="份额">
+        <button onclick="addFund()">添加</button>
+    </div>
+
+    <h2>持仓列表</h2>
+    <div id="list"></div>
+
+    <h2>资产占比</h2>
+    <canvas id="pieChart" height="200"></canvas>
+</div>
+
+<script>
+let chartCache={};
+let pieChart={};
+
+/* ===== 用户 ===== */
+function registerUser(){
+    let u=document.getElementById("username").value.trim();
+    let p=document.getElementById("password").value.trim();
+    if(!u||!p){alert("请输入用户名和密码");return;}
+    fetch("/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:u,password:p})})
+    .then(r=>r.json()).then(d=>{if(d.error) alert(d.error); else alert("注册成功");});
+}
+
+function loginUser(){
+    let u=document.getElementById("username").value.trim();
+    let p=document.getElementById("password").value.trim();
+    if(!u||!p){alert("请输入用户名和密码");return;}
+    fetch("/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:u,password:p})})
+    .then(r=>r.json()).then(d=>{
+        if(d.error){alert(d.error);}
+        else{
+            document.getElementById("loginPanel").style.display="none";
+            document.getElementById("app").style.display="block";
+            document.getElementById("userNameShow").innerText=d.username;
+            loadData();
+        }
+    });
+}
+
+function logoutUser(){fetch("/logout").then(()=>{location.reload();});}
+
+/* ===== 持仓操作 ===== */
+function addFund(){
+    let code=document.getElementById("code").value.trim();
+    let price=parseFloat(document.getElementById("price").value);
+    let amount=parseFloat(document.getElementById("amount").value);
+    if(!code||isNaN(price)||isNaN(amount)){alert("请输入有效数据");return;}
+    fetch("/add",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code, buy_price:price, amount})})
+    .then(r=>r.json()).then(d=>{if(d.error) alert(d.error); loadData();});
+}
+
+function deleteFund(code){fetch("/delete/"+code,{method:"DELETE"}).then(()=>loadData());}
+function updatePosition(code, delta){fetch("/update/"+code,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({delta})}).then(r=>r.json()).then(d=>{if(d.error) alert(d.error); loadData();});}
+function addShares(code){let amt=prompt("加仓份额");if(!amt) return; let n=parseFloat(amt); if(n>0) updatePosition(code,n);}
+function reduceShares(code){let amt=prompt("减仓份额");if(!amt) return; let n=parseFloat(amt); if(n>0) updatePosition(code,-n);}
+function clearShares(code,amount){if(confirm("确认清仓?")) updatePosition(code,-amount);}
+
+/* ===== 数据加载 ===== */
+function loadData(){
+    fetch("/holdings").then(r=>r.json()).then(data=>{
+        if(data.error){alert(data.error); return;}
+        document.getElementById("totalAsset").innerText=data.total_asset;
+        document.getElementById("totalProfit").innerText=data.total_profit;
+        document.getElementById("totalPercent").innerText=data.total_percent+"%";
+        renderFunds(data.funds);
+        updatePie(data.funds);
+    });
+}
+
+/* ===== 渲染基金列表 + 历史走势图 ===== */
+function renderFunds(funds){
+    let list=document.getElementById("list"); list.innerHTML="";
+    funds.forEach(f=>{
+        let div=document.createElement("div"); div.className="card";
+        div.innerHTML=`
+        <div class="fund-header">
+            <div><b>${f.name}(${f.code})</b><br><span class="small">当前估值: ${f.current}</span></div>
+            <div class="${f.percent>=0?'up':'down'}">${f.profit}(${f.percent}%)</div>
+        </div>
+        <div class="small">今日涨跌: <span class="${f.gszzl>=0?'up':'down'}">${f.gszzl}%</span></div>
+        <div class="period-buttons">
+            <button onclick="loadHistory('${f.code}','1m')">1M</button>
+            <button onclick="loadHistory('${f.code}','3m')">3M</button>
+            <button onclick="loadHistory('${f.code}','6m')">6M</button>
+            <button onclick="loadHistory('${f.code}','1y')">1Y</button>
+            <button onclick="addShares('${f.code}')">加仓</button>
+            <button onclick="reduceShares('${f.code}')">减仓</button>
+            <button onclick="clearShares('${f.code}',${f.amount})">清仓</button>
+            <button onclick="deleteFund('${f.code}')">删除</button>
+        </div>
+        <div class="chart-container"><canvas id="chart_${f.code}" height="120"></canvas></div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+/* ===== 历史走势图 ===== */
+function loadHistory(code, period){
+    fetch(`/history/${code}/${period}`).then(r=>r.json()).then(data=>{
+        let ctx=document.getElementById("chart_"+code);
+        if(chartCache[code]) chartCache[code].destroy();
+        chartCache[code]=new Chart(ctx,{
+            type:'line',
+            data:{
+                labels:data.map(d=>d.date),
+                datasets:[{data:data.map(d=>d.value), borderColor:'#3b82f6', tension:0.3, fill:false}]
+            },
+            options:{plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{ticks:{color:"#94a3b8"}}}}
+        });
+    });
+}
+
+/* ===== 饼图 ===== */
+function updatePie(funds){
+    if(pieChart && pieChart.destroy) pieChart.destroy();
+    pieChart=new Chart(document.getElementById("pieChart"),{
+        type:'doughnut',
+        data:{labels:funds.map(f=>f.name), datasets:[{data:funds.map(f=>f.current*f.amount), backgroundColor:funds.map((_,i)=>`hsl(${i*70%360},70%,60%)`)}]}
+    });
+}
+
+setInterval(()=>{if(document.getElementById("app").style.display=="block") loadData();},30000);
+</script>
+</body>
+</html>
