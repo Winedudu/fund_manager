@@ -243,13 +243,35 @@ async function loginUser(){
 function logoutUser(){ fetch("/logout").then(()=>location.reload()); }
 
 async function addFund(){
+    // 基础输入
+    let c = code.value.trim();
+    let p = parseFloat(price.value);
+    let a = parseFloat(amount.value);
+
+    if (!c) {
+        alert("请输入基金代码");
+        return;
+    }
+    if (isNaN(p) || p <= 0) {
+        alert("请输入正确的买入价格");
+        return;
+    }
+    if (isNaN(a) || a <= 0) {
+        alert("请输入正确的份额");
+        return;
+    }
+
+    // 发送请求
     let d = await (await fetchWithLoading("/add", {
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({code:code.value, buy_price:price.value, amount:amount.value})
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({code: c, buy_price: p, amount: a})
     }, "添加持仓中...")).json();
+
     if(d.error) alert(d.error);
-    loadData();
+    else loadData();
 }
+
 
 async function updatePosition(code, delta, price){
     await fetchWithLoading("/update/"+code, {
