@@ -4,7 +4,19 @@ from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = "replace_with_random_secret_key"
+# ===== Session 安全配置 =====
+app.secret_key = os.environ.get("SECRET_KEY", "dev_secret_key_change_me")
+
+# 7天自动登录
+app.permanent_session_lifetime = timedelta(days=7)
+
+# 生产环境安全（Render是https）
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=True  # Render必须True
+)
+
 DB_PATH = os.path.join(os.path.dirname(__file__), "fund.db")
 
 # ===== 初始化数据库 =====
@@ -62,26 +74,47 @@ def login():
     data = request.json
     username = data.get("username","").strip()
     password = data.get("password","").strip()
+
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("SELECT id,password FROM users WHERE username=?", (username,))
     row = c.fetchone()
     conn.close()
+
     if not row or not check_password_hash(row[1], password):
         return jsonify({"error":"用户名或密码错误"}),400
+
+    session.permanent = True  # ⭐ 关键
     session["user_id"] = row[0]
     session["username"] = username
-    return jsonify({"status":"ok", "username":username})
+
+    return jsonify({
+        "status":"ok",
+        "username":username
+    })
+
 
 @app.route("/logout")
 def logout():
     session.clear()
     return jsonify({"status":"ok"})
 
+@app.route("/me")
+def me():
+    if "user_id" not in session:
+        return jsonify({"logged_in": False})
+    return jsonify({
+        "logged_in": True,
+        "username": session.get("username")
+    })
+
 def current_user():
-    if "user_id" in session:
-        return session["user_id"], session["username"]
+    user_id = session.get("user_id")
+    username = session.get("username")
+    if user_id:
+        return user_id, username
     return None, None
+
 
 # ===== 基金接口 =====
 def fetch_realtime(code):
@@ -129,24 +162,40 @@ def add():
 def update_position(code):
     user_id,_ = current_user()
     if not user_id: return jsonify({"error":"请先登录"}),401
+
     data = request.json
     delta = float(data.get("delta",0))
+    add_price = float(data.get("buy_price",0))  # 新增：加仓价格
+
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("SELECT amount FROM holdings WHERE user_id=? AND code=?", (user_id, code))
+    c.execute("SELECT amount, buy_price FROM holdings WHERE user_id=? AND code=?", (user_id, code))
     row = c.fetchone()
+
     if not row:
         conn.close()
         return jsonify({"error":"基金不存在"}),400
-    new_amount = row[0] + delta
+
+    old_amount, old_price = row
+    new_amount = old_amount + delta
+
     if new_amount <= 0:
         c.execute("DELETE FROM holdings WHERE user_id=? AND code=?", (user_id, code))
         new_amount = 0
+        new_price = old_price
     else:
-        c.execute("UPDATE holdings SET amount=? WHERE user_id=? AND code=?", (new_amount, user_id, code))
+        # 如果加仓，更新平均买入价
+        if delta > 0:
+            avg_price = (old_price*old_amount + add_price*delta)/new_amount
+        else:
+            avg_price = old_price  # 减仓不改变买入价
+        c.execute("UPDATE holdings SET amount=?, buy_price=? WHERE user_id=? AND code=?", (new_amount, avg_price, user_id, code))
+        new_price = avg_price
+
     conn.commit()
     conn.close()
-    return jsonify({"status":"ok","new_amount":new_amount})
+    return jsonify({"status":"ok","new_amount":new_amount,"buy_price":new_price})
+
 
 @app.route("/delete/<code>", methods=["DELETE"])
 def delete(code):
@@ -169,35 +218,46 @@ def holdings():
     rows = c.fetchall()
     conn.close()
 
-    funds=[]
-    total_asset=0
-    total_cost=0
-    for code,buy_price,amount in rows:
+    funds = []
+    total_asset = 0
+    total_cost = 0
+    total_today_profit = 0
+    for code, buy_price, amount in rows:
         realtime = fetch_realtime(code)
         if not realtime: continue
-        current=float(realtime["gsz"])
-        asset=current*amount
-        cost=buy_price*amount
-        profit=asset-cost
-        percent=(current-buy_price)/buy_price*100
-        total_asset+=asset
-        total_cost+=cost
+        current = float(realtime["gsz"])
+        gszzl = float(realtime["gszzl"])  # 今日涨幅 %
+        asset = current * amount
+        cost = buy_price * amount
+        profit = asset - cost
+        today_profit = round(asset * gszzl / 100, 2)  # 今日收益
+
+        total_asset += asset
+        total_cost += cost
+        total_today_profit += today_profit
+
         funds.append({
-            "code":code,
-            "name":realtime["name"],
-            "current":current,
-            "buy_price":buy_price,
-            "amount":amount,
-            "profit":round(profit,2),
-            "percent":round(percent,2),
-            "gszzl":realtime["gszzl"]
+            "code": code,
+            "name": realtime["name"],
+            "current": current,
+            "buy_price": buy_price,
+            "amount": amount,
+            "profit": round(profit, 2),
+            "percent": round(profit / cost * 100, 2) if cost > 0 else 0,
+            "holding": round(asset, 2),
+            "gszzl": gszzl,
+            "today_profit": today_profit
         })
+
     return jsonify({
-        "funds":funds,
-        "total_asset":round(total_asset,2),
-        "total_profit":round(total_asset-total_cost,2),
-        "total_percent":round((total_asset-total_cost)/total_cost*100,2) if total_cost>0 else 0
+        "funds": funds,
+        "total_asset": round(total_asset, 2),
+        "total_profit": round(total_asset - total_cost, 2),
+        "total_percent": round((total_asset - total_cost) / total_cost * 100, 2) if total_cost > 0 else 0,
+        "today_profit": round(total_today_profit, 2)  # 今日总收益
     })
+
+
 
 @app.route("/history/<code>/<period>")
 def history(code, period):
