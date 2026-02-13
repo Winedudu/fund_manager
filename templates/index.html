@@ -17,12 +17,7 @@
             --sub: #94a3b8;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #0f172a, #1e293b);
@@ -31,23 +26,19 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            position: relative;
         }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+        h1 { text-align: center; margin-bottom: 20px; }
 
         .card, .fund-card {
             background: var(--card);
             border-radius: 12px;
             padding: 16px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
             width: 100%;
             max-width: 420px;
             margin-bottom: 16px;
         }
-
         input {
             padding: 10px;
             width: 100%;
@@ -57,7 +48,6 @@
             color: white;
             margin-bottom: 6px;
         }
-
         button {
             padding: 8px 14px;
             border: none;
@@ -66,254 +56,77 @@
             font-weight: 600;
             color: white;
             transition: all 0.2s ease-in-out;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.25);
         }
+        button:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.35); }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
-        }
+        .add-button { background: linear-gradient(45deg, #10b981, #3b82f6); }
+        .fund-buttons button { flex:1; border-radius:10px; font-weight:500; transition:0.2s; }
+        .fund-buttons button:nth-child(1) { background: linear-gradient(45deg, #3b82f6, #6366f1); }
+        .fund-buttons button:nth-child(2) { background: linear-gradient(45deg, #f59e0b, #f97316); }
+        .fund-buttons button:nth-child(3) { background: linear-gradient(45deg, #ef4444, #f43f5e); }
+        .fund-buttons button:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
 
-        /* 添加按钮 */
-        .add-button {
-            background: linear-gradient(45deg, #10b981, #3b82f6);
-        }
+        button.period { padding:5px 12px; font-size:13px; background:#334155; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.2); transition:0.2s; }
+        button.period.active { background: var(--accent); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        button.period:hover:not(.active){ background:#475569; }
 
-        /* 持仓操作按钮 */
-        .fund-buttons button {
-            flex: 1;
-            border-radius: 10px;
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
-        }
+        .nav-bar button { padding:5px 10px; font-size:14px; background: linear-gradient(45deg, #10b981, #3b82f6); border-radius:10px; box-shadow:0 3px 6px rgba(0,0,0,0.25); }
+        .nav-bar button:hover { transform:translateY(-1px); box-shadow:0 5px 10px rgba(0,0,0,0.35); }
 
-        .fund-buttons button:nth-child(1) {
-            background: linear-gradient(45deg, #3b82f6, #6366f1);
-        }
+        #loginPanel .form-row button { flex:1; border-radius:10px; background:linear-gradient(45deg, #3b82f6, #6366f1); }
+        #loginPanel .form-row button:hover { transform: translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.35); }
 
-        /* 加仓 */
-        .fund-buttons button:nth-child(2) {
-            background: linear-gradient(45deg, #f59e0b, #f97316);
-        }
+        .grid { display:flex; gap:12px; margin-bottom:16px; }
+        .stat-card { padding:10px; text-align:center; flex:0 0 22%; min-width:80px; border-radius:10px; background: var(--card); }
+        .stat-title { font-size:13px; color: var(--sub); }
+        .stat-value { font-size:18px; font-weight:600; margin-top:5px; }
+        .up { color: var(--up); } .down { color: var(--down); } .blink { animation: blink 1s infinite; }
+        @keyframes blink { 0%,50%,100% { opacity:1; } 25%,75% { opacity:0.2; } }
+        .small { font-size:12px; color: var(--sub); }
+        .loading { text-align:center; padding:10px; color: var(--sub); }
+        canvas { margin-top:8px; width:100% !important; }
+        .fund-header { display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding:12px 16px; background:#1e293b; border-radius:12px 12px 0 0; transition:0.2s; }
+        .fund-header:hover { background:#27303f; }
+        .fund-header-left { display:flex; flex-direction:column; gap:2px; }
+        .fund-header-right { display:flex; align-items:center; gap:8px; }
+        .fund-title { font-weight:600; }
+        .fund-profit { font-weight:600; text-align:right; }
+        .arrow { display:inline-block; transition:transform 0.3s; font-weight:bold; }
+        .arrow.open { transform:rotate(90deg); }
+        .fund-body { display:none; flex-direction:column; gap:8px; background:#0f172a; padding:12px 16px; border-radius:0 0 12px 12px; }
+        .fund-buttons { display:flex; gap:8px; margin-top:8px; }
+        .fund-buttons button { flex:1; }
+        .nav-bar { display:flex; justify-content:space-between; align-items:center; width:100%; max-width:420px; margin-bottom:16px; padding:10px 15px; background: var(--card); border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+        .nav-bar span { font-weight:600; }
+        .form-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+        .form-row input { flex:1; }
+        .period-box { display:flex; gap:5px; flex-wrap:wrap; margin-top:5px; }
 
-        /* 减仓 */
-        .fund-buttons button:nth-child(3) {
-            background: linear-gradient(45deg, #ef4444, #f43f5e);
-        }
-
-        /* 清仓 */
-        .fund-buttons button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        /* Period切换按钮 */
-        button.period {
-            padding: 5px 12px;
-            font-size: 13px;
-            background: #334155;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: all 0.2s ease-in-out;
-        }
-
-        button.period.active {
-            background: var(--accent);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        button.period:hover:not(.active) {
-            background: #475569;
-        }
-
-        /* 导航栏按钮 */
-        .nav-bar button {
-            padding: 5px 10px;
-            font-size: 14px;
-            background: linear-gradient(45deg, #10b981, #3b82f6);
-            border-radius: 10px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
-        }
-
-        .nav-bar button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.35);
-        }
-
-        /* 登录注册按钮 */
-        #loginPanel .form-row button {
-            flex: 1;
-            border-radius: 10px;
-            background: linear-gradient(45deg, #3b82f6, #6366f1);
-        }
-
-        #loginPanel .form-row button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-        }
-
-        .grid {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .stat-card {
-            padding: 10px; /* 缩小一点内边距 */
-            text-align: center;
-            flex: 0 0 22%; /* 四个卡片加间距大概占 100% */
-            min-width: 80px; /* 保证最小宽度不太小 */
-            border-radius: 10px;
-            background: var(--card);
-        }
-
-        .stat-title {
-            font-size: 13px;
-            color: var(--sub);
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: 600;
-            margin-top: 5px;
-        }
-
-        .up {
-            color: var(--up);
-        }
-
-        .down {
-            color: var(--down);
-        }
-
-        .blink {
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 50%, 100% {
-                opacity: 1;
-            }
-            25%, 75% {
-                opacity: 0.2;
-            }
-        }
-
-        .small {
-            font-size: 12px;
-            color: var(--sub);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 10px;
-            color: var(--sub);
-        }
-
-        canvas {
-            margin-top: 8px;
-            width: 100% !important;
-        }
-
-        .fund-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            padding: 12px 16px;
-            background: #1e293b;
-            border-radius: 12px 12px 0 0;
-            transition: 0.2s;
-        }
-
-        .fund-header:hover {
-            background: #27303f;
-        }
-
-        .fund-header-left {
-            display: flex;
+        /* ==== 全局 Loading 遮罩 ==== */
+        #globalLoading {
+            position: fixed;
+            top:0; left:0; right:0; bottom:0;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            font-size:18px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            z-index:9999;
+            display:none;
             flex-direction: column;
-            gap: 2px;
         }
-
-        .fund-header-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        #globalLoading .spinner {
+            border:4px solid rgba(255,255,255,0.2);
+            border-top:4px solid #3b82f6;
+            border-radius:50%;
+            width:40px;
+            height:40px;
+            animation: spin 1s linear infinite;
+            margin-bottom:10px;
         }
-
-        .fund-title {
-            font-weight: 600;
-        }
-
-        .fund-profit {
-            font-weight: 600;
-            text-align: right;
-        }
-
-        .arrow {
-            display: inline-block;
-            transition: transform 0.3s;
-            font-weight: bold;
-        }
-
-        .arrow.open {
-            transform: rotate(90deg);
-        }
-
-        .fund-body {
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-            background: #0f172a;
-            padding: 12px 16px;
-            border-radius: 0 0 12px 12px;
-        }
-
-        .fund-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .fund-buttons button {
-            flex: 1;
-        }
-
-        .nav-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 420px;
-            margin-bottom: 16px;
-            padding: 10px 15px;
-            background: var(--card);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .nav-bar span {
-            font-weight: 600;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 8px;
-        }
-
-        .form-row input {
-            flex: 1;
-        }
-
-        .period-box {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            margin-top: 5px;
-        }
+        @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -372,134 +185,159 @@
     <canvas id="pieChart" height="200"></canvas>
 </div>
 
+<!-- 全局 Loading 遮罩 -->
+<div id="globalLoading">
+    <div class="spinner"></div>
+    <div>正在加载，请稍候...</div>
+</div>
+
 <script>
-    let chartCache = {}, pieChart = null;
+let chartCache = {}, pieChart = null;
 
-    window.onload = () => fetch("/me").then(r => r.json()).then(d => {
-        if (d.logged_in) showApp(d.username);
+// ==== Loading 工具函数 ====
+function showLoading(msg="加载中...") {
+    const l = document.getElementById("globalLoading");
+    l.style.display = "flex";
+    l.querySelector("div:last-child").innerText = msg;
+}
+function hideLoading(){ document.getElementById("globalLoading").style.display="none"; }
+
+// ==== 包装 fetch 请求，自动显示 Loading ====
+async function fetchWithLoading(url, options={}, msg="加载中...") {
+    try { showLoading(msg);
+        let res = await fetch(url, options);
+        hideLoading();
+        return res;
+    } catch(e){ hideLoading(); alert("请求失败："+e); throw e; }
+}
+
+// ==== 页面初始化 ====
+window.onload = async () => {
+    let d = await (await fetchWithLoading("/me", {}, "正在检查登录状态")).json();
+    if(d.logged_in) showApp(d.username);
+};
+
+function showApp(username){
+    loginPanel.style.display = "none";
+    app.style.display = "block";
+    userNameShow.innerText = username;
+    loadData();
+}
+
+async function registerUser(){
+    let d = await (await fetchWithLoading("/register", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({username:username.value, password:password.value})
+    }, "注册中...")).json();
+    if(d.error) alert(d.error); else alert("注册成功");
+}
+
+async function loginUser(){
+    let d = await (await fetchWithLoading("/login", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({username:username.value, password:password.value})
+    }, "登录中...")).json();
+    if(d.error) alert(d.error); else showApp(d.username);
+}
+
+function logoutUser(){ fetch("/logout").then(()=>location.reload()); }
+
+async function addFund(){
+    let d = await (await fetchWithLoading("/add", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({code:code.value, buy_price:price.value, amount:amount.value})
+    }, "添加持仓中...")).json();
+    if(d.error) alert(d.error);
+    loadData();
+}
+
+async function updatePosition(code, delta, price){
+    await fetchWithLoading("/update/"+code, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({delta,buy_price:price})
+    }, "更新持仓中...");
+    loadData();
+}
+</script>
+
+<script>
+// ==== 持仓操作 ====
+function addShares(code){
+    let n = parseFloat(prompt("加仓份额"));
+    if(!n || n<=0) return;
+    let p = parseFloat(prompt("加仓价格"));
+    if(!p || p<=0) return;
+    updatePosition(code, n, p);
+}
+
+function reduceShares(code){
+    let n = parseFloat(prompt("减仓份额"));
+    if(n>0) updatePosition(code, -n);
+}
+
+function clearShares(code, amount){
+    if(confirm("确认清仓?")) updatePosition(code, -amount);
+}
+
+// ==== 数据加载与刷新 ====
+async function refreshRealtime(){
+    let data = await (await fetchWithLoading("/holdings", {}, "刷新数据中...")).json();
+
+    totalAsset.innerText = data.total_asset;
+    totalProfit.innerText = (data.total_profit>=0?'+':'') + data.total_profit;
+    totalPercent.innerText = (data.total_percent>=0?'+':'') + data.total_percent + '%';
+    todayProfit.innerText = data.today_profit>=0? '+'+data.today_profit : data.today_profit;
+
+    todayProfit.className = "stat-value " + (data.today_profit>=0?"up":"down");
+    totalProfit.className = "stat-value " + (data.total_profit>=0?"up":"down");
+    totalPercent.className = "stat-value " + (data.total_percent>=0?"up":"down");
+
+    data.funds.forEach(f=>{
+        let card = document.getElementById("fund_"+f.code);
+        if(!card) return;
+        card.querySelector(".fund-profit").innerHTML = `${f.profit} (${f.percent>=0?'+':''}${f.percent}%)`;
+        card.querySelector(".fund-profit").className = `fund-profit ${f.percent>=0?"up blink":"down blink"}`;
+        card.querySelector(".holding").innerHTML = `持有金额: ${f.holding}`;
+        card.querySelector(".realtime").innerHTML = `当前估值: ${f.current} | 今日涨跌: ${f.gszzl}%`;
+        card.querySelector(".today-profit").innerHTML = `今日收益: ${f.today_profit>=0?'+':''}${f.today_profit}`;
     });
+    updatePie(data.funds);
+}
 
-    function showApp(username) {
-        loginPanel.style.display = "none";
-        app.style.display = "block";
-        userNameShow.innerText = username;
-        loadData();
-    }
+async function loadData(){
+    list.innerHTML = "<div class='loading'>加载中...</div>";
+    let data = await (await fetchWithLoading("/holdings", {}, "加载持仓中...")).json();
 
-    function registerUser() {
-        fetch("/register", {
-            method: "POST", headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({username: username.value, password: password.value})
-        }).then(r => r.json())
-            .then(d => {
-                if (d.error) alert(d.error); else alert("注册成功");
-            });
-    }
+    totalAsset.innerText = data.total_asset;
+    totalProfit.innerText = (data.total_profit>=0?'+':'') + data.total_profit;
+    totalPercent.innerText = (data.total_percent>=0?'+':'') + data.total_percent + '%';
+    todayProfit.innerText = data.today_profit>=0? '+'+data.today_profit : data.today_profit;
 
-    function loginUser() {
-        fetch("/login", {
-            method: "POST", headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({username: username.value, password: password.value})
-        }).then(r => r.json())
-            .then(d => {
-                if (d.error) alert(d.error); else showApp(d.username);
-            });
-    }
+    todayProfit.className = "stat-value " + (data.today_profit>=0?"up":"down");
+    totalProfit.className = "stat-value " + (data.total_profit>=0?"up":"down");
+    totalPercent.className = "stat-value " + (data.total_percent>=0?"up":"down");
 
-    function logoutUser() {
-        fetch("/logout").then(() => location.reload());
-    }
+    renderFunds(data.funds);
+    updatePie(data.funds);
+}
 
-    function addFund() {
-        fetch("/add", {
-            method: "POST", headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({code: code.value, buy_price: price.value, amount: amount.value})
-        })
-            .then(r => r.json()).then(d => {
-            if (d.error) alert(d.error);
-            loadData();
-        });
-    }
-
-    function updatePosition(code, delta, price) {
-        fetch("/update/" + code, {
-            method: "POST", headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({delta, buy_price: price})
-        }).then(() => loadData());
-    }
-
-    function addShares(code) {
-        let n = parseFloat(prompt("加仓份额"));
-        if (!n || n <= 0) return;
-        let p = parseFloat(prompt("加仓价格"));
-        if (!p || p <= 0) return;
-        updatePosition(code, n, p);
-    }
-
-    function reduceShares(code) {
-        let n = parseFloat(prompt("减仓份额"));
-        if (n > 0) updatePosition(code, -n);
-    }
-
-    function clearShares(code, amount) {
-        if (confirm("确认清仓?")) updatePosition(code, -amount);
-    }
-
-    function refreshRealtime() {
-        fetch("/holdings").then(r => r.json()).then(data => {
-            totalAsset.innerText = data.total_asset;
-            totalProfit.innerText = (data.total_profit >= 0 ? '+' : '') + data.total_profit;
-            totalPercent.innerText = (data.total_percent >= 0 ? '+' : '') + data.total_percent + '%';
-            todayProfit.innerText = data.today_profit >= 0 ? '+' + data.today_profit : data.today_profit;
-            todayProfit.className = "stat-value " + (data.today_profit >= 0 ? "up" : "down");
-            totalProfit.className = "stat-value " + (data.total_profit >= 0 ? "up" : "down");
-            totalPercent.className = "stat-value " + (data.total_percent >= 0 ? "up" : "down");
-            data.funds.forEach(f => {
-                let card = document.getElementById("fund_" + f.code);
-                if (!card) return;
-                card.querySelector(".fund-profit").innerHTML = `${f.profit} (${f.percent >= 0 ? '+' : ''}${f.percent}%)`;
-                card.querySelector(".fund-profit").className = `fund-profit ${f.percent >= 0 ? "up blink" : "down blink"}`;
-                card.querySelector(".holding").innerHTML = `持有金额: ${f.holding}`;
-                card.querySelector(".realtime").innerHTML = `当前估值: ${f.current} | 今日涨跌: ${f.gszzl}%`;
-                card.querySelector(".today-profit").innerHTML = `今日收益: ${f.today_profit >= 0 ? '+' : ''}${f.today_profit}`;
-
-            });
-            updatePie(data.funds);
-        });
-    }
-
-    function loadData() {
-        list.innerHTML = "<div class='loading'>加载中...</div>";
-        fetch("/holdings").then(r => r.json()).then(data => {
-            totalAsset.innerText = data.total_asset;
-            totalProfit.innerText = (data.total_profit >= 0 ? '+' : '') + data.total_profit;
-            totalPercent.innerText = (data.total_percent >= 0 ? '+' : '') + data.total_percent + '%';
-            todayProfit.innerText = data.today_profit >= 0 ? '+' + data.today_profit : data.today_profit;
-            todayProfit.className = "stat-value " + (data.today_profit >= 0 ? "up" : "down");
-
-            totalProfit.className = "stat-value " + (data.total_profit >= 0 ? "up" : "down");
-            totalPercent.className = "stat-value " + (data.total_percent >= 0 ? "up" : "down");
-            renderFunds(data.funds);
-            updatePie(data.funds);
-        });
-    }
-
-    function renderFunds(funds) {
-        list.innerHTML = "";
-        funds.forEach(f => {
-            let div = document.createElement("div");
-            div.className = "fund-card";
-            div.id = "fund_" + f.code;
-            div.innerHTML = `
+// ==== 渲染持仓卡片 ====
+function renderFunds(funds){
+    list.innerHTML = "";
+    funds.forEach(f=>{
+        let div = document.createElement("div");
+        div.className = "fund-card";
+        div.id = "fund_"+f.code;
+        div.innerHTML = `
 <div class="fund-header">
     <div class="fund-header-left">
         <span class="fund-title">${f.name} (${f.code})</span>
         <span class="small holding">持有金额: ${f.holding}</span>
         <span class="small realtime">当前估值: ${f.current} | 今日涨跌: ${f.gszzl}%</span>
-        <span class="small today-profit">今日收益: ${f.today_profit >= 0 ? '+' : ''}${f.today_profit}</span>
+        <span class="small today-profit">今日收益: ${f.today_profit>=0?'+':''}${f.today_profit}</span>
     </div>
     <div class="fund-header-right">
-        <span class="fund-profit ${f.percent >= 0 ? 'up blink' : 'down blink'}">${f.profit} (${f.percent >= 0 ? '+' : ''}${f.percent}%)</span>
+        <span class="fund-profit ${f.percent>=0?'up blink':'down blink'}">${f.profit} (${f.percent>=0?'+':''}${f.percent}%)</span>
         <span class="arrow">▶</span>
     </div>
 </div>
@@ -516,82 +354,83 @@
         <button class="period" onclick="changePeriod('${f.code}','1y',this)">1年</button>
     </div>
     <canvas id="chart_${f.code}" height="120"></canvas>
-</div>
-        `;
-            list.appendChild(div);
+</div>`;
+        list.appendChild(div);
 
-            let header = div.querySelector(".fund-header");
-            let body = div.querySelector(".fund-body");
-            let arrow = header.querySelector(".arrow");
-            body.style.display = "none";
-            header.addEventListener("click", () => {
-                if (body.style.display === "none") {
-                    body.style.display = "flex";
-                    arrow.classList.add("open");
-                    loadHistory(f.code, getActivePeriod(f.code));
-                } else {
-                    body.style.display = "none";
-                    arrow.classList.remove("open");
-                }
-            });
+        let header = div.querySelector(".fund-header");
+        let body = div.querySelector(".fund-body");
+        let arrow = header.querySelector(".arrow");
+        body.style.display = "none";
+        header.addEventListener("click", ()=>{
+            if(body.style.display === "none"){
+                body.style.display = "flex";
+                arrow.classList.add("open");
+                loadHistory(f.code,getActivePeriod(f.code));
+            }else{
+                body.style.display = "none";
+                arrow.classList.remove("open");
+            }
         });
-    }
+    });
+}
 
-    function getActivePeriod(code) {
-        let box = document.getElementById("period_" + code);
-        for (let btn of box.children) if (btn.classList.contains("active")) return btn.innerText.replace(/[^\d]/g, '') + 'm';
-        return "3m";
-    }
+// ==== 周期选择 ====
+function getActivePeriod(code){
+    let box = document.getElementById("period_"+code);
+    for(let btn of box.children) if(btn.classList.contains("active")) return btn.innerText.replace(/[^\d]/g,'')+'m';
+    return "3m";
+}
 
-    function changePeriod(code, period, btn) {
-        let box = document.getElementById("period_" + code);
-        [...box.children].forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        let chartDiv = document.getElementById("fund_" + code).querySelector(".fund-body");
-        if (chartDiv.style.display === "flex") loadHistory(code, period);
-    }
+function changePeriod(code, period, btn){
+    let box = document.getElementById("period_"+code);
+    [...box.children].forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    let chartDiv = document.getElementById("fund_"+code).querySelector(".fund-body");
+    if(chartDiv.style.display==="flex") loadHistory(code, period);
+}
 
-    function loadHistory(code, period) {
-        fetch(`/history/${code}/${period}`).then(r => r.json()).then(data => {
-            if (!data.length) return;
-            let canvas = document.getElementById("chart_" + code);
-            let ctx = canvas.getContext("2d");
-            if (chartCache[code]) chartCache[code].destroy();
+// ==== 加载历史图表 ====
+async function loadHistory(code, period){
+    let data = await (await fetchWithLoading(`/history/${code}/${period}`, {}, "加载历史数据中...")).json();
+    if(!data.length) return;
+    let canvas = document.getElementById("chart_"+code);
+    let ctx = canvas.getContext("2d");
+    if(chartCache[code]) chartCache[code].destroy();
 
-            let first = data[0].value, last = data[data.length - 1].value, isUp = last >= first;
-            let gradient = ctx.createLinearGradient(0, 0, 0, 200);
-            gradient.addColorStop(0, isUp ? "rgba(239,68,68,0.4)" : "rgba(34,197,94,0.4)");
-            gradient.addColorStop(1, "rgba(0,0,0,0)");
+    let first = data[0].value, last = data[data.length-1].value, isUp = last>=first;
+    let gradient = ctx.createLinearGradient(0,0,0,200);
+    gradient.addColorStop(0, isUp?"rgba(239,68,68,0.4)":"rgba(34,197,94,0.4)");
+    gradient.addColorStop(1,"rgba(0,0,0,0)");
 
-            chartCache[code] = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.map(d => d.date),
-                    datasets: [{
-                        data: data.map(d => d.value),
-                        borderColor: isUp ? "#ef4444" : "#22c55e",
-                        backgroundColor: gradient,
-                        fill: true,
-                        tension: 0.3,
-                        pointRadius: 0
-                    }]
-                },
-                options: {plugins: {legend: {display: false}}, scales: {x: {display: false}}}
-            });
-        });
-    }
+    chartCache[code] = new Chart(ctx,{
+        type:'line',
+        data:{
+            labels:data.map(d=>d.date),
+            datasets:[{
+                data:data.map(d=>d.value),
+                borderColor:isUp?"#ef4444":"#22c55e",
+                backgroundColor:gradient,
+                fill:true,
+                tension:0.3,
+                pointRadius:0
+            }]
+        },
+        options:{plugins:{legend:{display:false}},scales:{x:{display:false}}}
+    });
+}
 
-    function updatePie(funds) {
-        if (pieChart) pieChart.destroy();
-        pieChart = new Chart(document.getElementById("pieChart"), {
-            type: 'doughnut',
-            data: {labels: funds.map(f => f.name), datasets: [{data: funds.map(f => f.current * f.amount)}]}
-        });
-    }
+// ==== 饼图更新 ====
+function updatePie(funds){
+    if(pieChart) pieChart.destroy();
+    pieChart = new Chart(document.getElementById("pieChart"),{
+        type:'doughnut',
+        data:{labels:funds.map(f=>f.name), datasets:[{data:funds.map(f=>f.current*f.amount)}]}
+    });
+}
 
-    setInterval(() => {
-        if (app.style.display == "block") refreshRealtime();
-    }, 30000);
+// ==== 自动刷新 ====
+setInterval(()=>{ if(app.style.display=="block") refreshRealtime(); }, 30000);
+
 </script>
 </body>
 </html>
