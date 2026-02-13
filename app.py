@@ -168,29 +168,48 @@ def fetch_history(code):
 @app.route("/add", methods=["POST"])
 def add():
     user_id,_ = current_user()
-    if not user_id: return jsonify({"error":"请先登录"}),401
+    if not user_id:
+        return jsonify({"error":"请先登录"}),401
 
     data = request.json
-    code = data["code"].strip()
-    buy_price = float(data["buy_price"])
-    amount = float(data["amount"])
+    code = data.get("code","").strip()
+    buy_price = data.get("buy_price")
+    amount = data.get("amount")
+
+    # 1. 基础输入校验
+    if not code:
+        return jsonify({"error":"基金代码不能为空"}),400
+    try:
+        buy_price = float(buy_price)
+        amount = float(amount)
+        if buy_price <= 0 or amount <= 0:
+            return jsonify({"error":"买入价格和份额必须大于0"}),400
+    except:
+        return jsonify({"error":"买入价格和份额必须为数字"}),400
+
+    # 2. 校验基金是否存在
+    realtime = fetch_realtime(code)
+    if not realtime:
+        return jsonify({"error":"基金代码无效或不存在"}),400
 
     conn = get_conn()
     c = conn.cursor()
-
+    # 3. 防止重复添加
     c.execute("SELECT id FROM holdings WHERE user_id=%s AND code=%s", (user_id, code))
     if c.fetchone():
         conn.close()
         return jsonify({"error":"该基金已存在，请直接操作仓位"}),400
 
+    # 4. 插入数据库
     c.execute(
         "INSERT INTO holdings (user_id, code, buy_price, amount) VALUES (%s,%s,%s,%s)",
         (user_id, code, buy_price, amount)
     )
-
     conn.commit()
     conn.close()
-    return jsonify({"status":"ok"})
+
+    return jsonify({"status":"ok","name":realtime["name"]})
+
 
 
 @app.route("/update/<code>", methods=["POST"])
