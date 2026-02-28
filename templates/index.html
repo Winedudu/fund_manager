@@ -1,622 +1,1284 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-  <title>爱理财的DU</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>爱理财的DU</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- ✅ 方案A：SortableJS（手机端最稳） -->
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- ✅ 方案A：SortableJS（手机端最稳） -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
-  <style>
-    :root{
-      --bg:#0f172a; --bg2:#0b1224;
-      --card:rgba(30,41,59,.86); --card2:rgba(15,23,42,.72);
-      --accent:#3b82f6; --accent2:#6366f1;
-      --up:#ef4444; --down:#22c55e;
-      --text:#f1f5f9; --sub:#94a3b8;
-      --line:rgba(148,163,184,.14);
-      --shadow:0 10px 26px rgba(0,0,0,.32);
-      --shadow2:0 6px 18px rgba(0,0,0,.28);
-      --radius:16px;
-    }
-    [data-theme="gold"]{
-      --bg:#0a0b10; --bg2:#07070b;
-      --card:rgba(20,20,24,.86); --card2:rgba(10,10,14,.72);
-      --accent:#f59e0b; --accent2:#fbbf24;
-      --up:#f97316; --down:#22c55e;
-      --text:#f8fafc; --sub:#a1a1aa;
-      --line:rgba(161,161,170,.14);
-      --shadow:0 10px 26px rgba(0,0,0,.46);
-      --shadow2:0 6px 18px rgba(0,0,0,.36);
-    }
+    <style>
+        :root {
+            --bg: #0f172a;
+            --bg2: #0b1224;
+            --card: rgba(30, 41, 59, .86);
+            --card2: rgba(15, 23, 42, .72);
+            --accent: #3b82f6;
+            --accent2: #6366f1;
+            --up: #ef4444;
+            --down: #22c55e;
+            --text: #f1f5f9;
+            --sub: #94a3b8;
+            --line: rgba(148, 163, 184, .14);
+            --shadow: 0 10px 26px rgba(0, 0, 0, .32);
+            --shadow2: 0 6px 18px rgba(0, 0, 0, .28);
+            --radius: 16px;
+        }
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:
-        radial-gradient(1200px 700px at 20% 0%, rgba(99,102,241,0.18), transparent 55%),
-        radial-gradient(900px 600px at 90% 10%, rgba(59,130,246,0.16), transparent 50%),
-        linear-gradient(135deg,var(--bg),#111a2f 65%,var(--bg2));
-      color:var(--text);
-      display:flex;flex-direction:column;align-items:center;
-      padding:14px 12px 28px;
-      overflow-x:hidden;
-    }
+        [data-theme="gold"] {
+            --bg: #0a0b10;
+            --bg2: #07070b;
+            --card: rgba(20, 20, 24, .86);
+            --card2: rgba(10, 10, 14, .72);
+            --accent: #f59e0b;
+            --accent2: #fbbf24;
+            --up: #f97316;
+            --down: #22c55e;
+            --text: #f8fafc;
+            --sub: #a1a1aa;
+            --line: rgba(161, 161, 170, .14);
+            --shadow: 0 10px 26px rgba(0, 0, 0, .46);
+            --shadow2: 0 6px 18px rgba(0, 0, 0, .36);
+        }
 
-    /* ====== 顶部 AppBar ====== */
-    .appbar{
-      position:sticky;top:10px;z-index:50;
-      width:100%;max-width:980px;margin:0 auto 14px;
-      border-radius:22px;padding:10px 12px;
-      background:rgba(15,23,42,.68);
-      border:1px solid rgba(148,163,184,.12);
-      box-shadow:var(--shadow2);
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
-      display:flex;gap:10px;align-items:center;justify-content:space-between;
-      min-width:0;
-    }
-    .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:0 1 auto}
-    .logo{
-      width:36px;height:36px;border-radius:12px;
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
-      box-shadow:0 10px 18px rgba(59,130,246,.24);
-      display:grid;place-items:center;font-weight:900;color:#fff;user-select:none;
-    }
-    .brand .title{display:flex;flex-direction:column;line-height:1.1;min-width:0}
-    .brand .title b{
-      font-size:14px;letter-spacing:.3px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      max-width:40vw;
-    }
-    .brand .title span{
-      font-size:12px;color:var(--sub);
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      max-width:46vw;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
 
-    .appbar-center{flex:1;display:flex;align-items:center;gap:10px;max-width:520px;min-width:0}
-    .search{
-      flex:1;display:flex;align-items:center;gap:8px;
-      padding:10px 12px;border-radius:16px;
-      background:rgba(51,65,85,.45);
-      border:1px solid rgba(148,163,184,.14);
-      min-width:0;
-    }
-    .search input{
-      flex:1;background:transparent;border:none;outline:none;color:var(--text);
-      font-size:14px;min-width:0;
-    }
-    .search .icon{color:var(--sub);font-size:14px;user-select:none;flex:0 0 auto}
+        html, body {
+            height: 100%
+        }
 
-    .appbar-actions{
-      display:flex;align-items:center;gap:10px;flex:0 1 auto;justify-content:flex-end;
-      min-width:0;flex-wrap:wrap;
-    }
-    .chip{
-      display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;
-      background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.14);
-      font-size:12px;color:var(--sub);user-select:none;white-space:nowrap;
-      max-width:160px;overflow:hidden;text-overflow:ellipsis;
-    }
-    .chip b{color:var(--text);font-weight:700}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(1200px 700px at 20% 0%, rgba(99, 102, 241, 0.18), transparent 55%),
+            radial-gradient(900px 600px at 90% 10%, rgba(59, 130, 246, 0.16), transparent 50%),
+            linear-gradient(135deg, var(--bg), #111a2f 65%, var(--bg2));
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 14px 12px 28px;
+            overflow-x: hidden;
+        }
 
-    button{
-      padding:9px 12px;border:none;border-radius:14px;cursor:pointer;
-      font-weight:700;color:#fff;font-size:13px;
-      background:rgba(51,65,85,.55);
-      border:1px solid rgba(148,163,184,.14);
-      backdrop-filter:blur(6px);
-      -webkit-backdrop-filter:blur(6px);
-      white-space:nowrap;min-width:0;
-      transition:transform .16s ease, box-shadow .16s ease;
-      box-shadow:0 4px 10px rgba(0,0,0,.25);
-    }
-    button:hover{transform:translateY(-2px);box-shadow:0 10px 18px rgba(0,0,0,.32)}
-    button:active{transform:translateY(0) scale(.99)}
+        /* ====== 顶部 AppBar ====== */
+        .appbar {
+            position: sticky;
+            top: 10px;
+            z-index: 50;
+            width: 100%;
+            max-width: 980px;
+            margin: 0 auto 14px;
+            border-radius: 22px;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, .68);
+            border: 1px solid rgba(148, 163, 184, .12);
+            box-shadow: var(--shadow2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 0;
+        }
 
-    .btn-primary{background:linear-gradient(45deg,#10b981,var(--accent));border:none}
-    .btn-accent{background:linear-gradient(45deg,var(--accent),var(--accent2));border:none}
-    .btn-danger{background:linear-gradient(45deg,#ef4444,#f43f5e);border:none}
-    .btn-ghost{background:rgba(51,65,85,.35)}
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 0 1 auto
+        }
 
-    .wrap{width:100%;max-width:980px;margin:0 auto}
-    h1{display:none}
+        .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            box-shadow: 0 10px 18px rgba(59, 130, 246, .24);
+            display: grid;
+            place-items: center;
+            font-weight: 900;
+            color: #fff;
+            user-select: none;
+        }
 
-    .card{
-      background:var(--card);
-      border-radius:var(--radius);
-      padding:16px;
-      box-shadow:var(--shadow);
-      width:100%;
-      border:1px solid rgba(148,163,184,.12);
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
-      margin-bottom:14px;
-    }
-    #loginPanel.card{max-width:480px;margin-top:14px}
+        .brand .title {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+            min-width: 0
+        }
 
-    input{
-      padding:11px 12px;width:100%;
-      border-radius:12px;border:1px solid rgba(148,163,184,.16);
-      background:rgba(51,65,85,.35);color:#fff;margin-bottom:8px;font-size:14px;outline:none;
-    }
-    input:focus{border-color:rgba(59,130,246,.45);box-shadow:0 0 0 4px rgba(59,130,246,.14)}
-    .form-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .form-row input{flex:1;margin-bottom:0}
-    .form-row button{flex:1}
+        .brand .title b {
+            font-size: 14px;
+            letter-spacing: .3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 40vw;
+        }
 
-    .overview{display:flex;flex-direction:column;gap:12px}
-    .grid{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-    .stat-card{
-      flex:1 1 170px;min-width:160px;padding:12px;border-radius:16px;
-      background:rgba(15,23,42,.35);
-      border:1px solid rgba(148,163,184,.12);
-      box-shadow:0 6px 14px rgba(0,0,0,.18);
-      text-align:center;
-    }
-    .stat-title{font-size:12px;color:var(--sub)}
-    .stat-value{font-size:20px;font-weight:900;margin-top:6px;font-variant-numeric:tabular-nums}
-    .up{color:var(--up)} .down{color:var(--down)}
-    .small{font-size:12px;color:var(--sub)}
-    .mono{font-variant-numeric:tabular-nums}
+        .brand .title span {
+            font-size: 12px;
+            color: var(--sub);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 46vw;
+        }
 
-    .drag-tip{
-      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
-      font-size:12px;color:var(--sub);
-      background:rgba(148,163,184,.10);
-      border:1px solid rgba(148,163,184,.14);
-      user-select:none;white-space:nowrap;
-    }
+        .appbar-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 520px;
+            min-width: 0
+        }
 
-    /* ===== 持仓列表容器 ===== */
-    .list-card{padding:0;overflow:hidden}
-    .list-head{
-      padding:14px 14px 10px;
-      background:rgba(30,41,59,.40);
-      border-bottom:1px solid rgba(148,163,184,.10);
-    }
-    .list-head-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-    .list-title{font-size:14px;font-weight:900}
-    .list-sub{font-size:12px;color:var(--sub)}
-    .list-controls{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:nowrap;min-width:0}
-    .list-controls-left{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:10px}
-    .list-controls-right{flex:0 0 auto;display:flex;align-items:center;gap:10px;white-space:nowrap}
+        .search {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 16px;
+            background: rgba(51, 65, 85, .45);
+            border: 1px solid rgba(148, 163, 184, .14);
+            min-width: 0;
+        }
 
-    .seg-scroll{
-      display:flex;gap:8px;padding:6px;border-radius:16px;
-      background:rgba(51,65,85,.28);
-      border:1px solid rgba(148,163,184,.12);
-      overflow-x:auto;-webkit-overflow-scrolling:touch;
-      scrollbar-width:none;
-      flex:1 1 auto;min-width:0;
-    }
-    .seg-scroll::-webkit-scrollbar{display:none}
-    .seg-scroll button{
-      padding:8px 12px;border-radius:999px;box-shadow:none;
-      border:1px solid rgba(148,163,184,.12);
-      background:rgba(15,23,42,.20);
-      color:var(--sub);
-      font-weight:900;font-size:12px;
+        .search input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-size: 14px;
+            min-width: 0;
+        }
 
-      /* ✅ 防止被挤压导致文字变形 */
-      flex:0 0 auto;
-      width:max-content;min-width:max-content;
-      white-space:nowrap;line-height:1;
-    }
-    .seg-scroll button.active{
-      background:rgba(59,130,246,.22);
-      border-color:rgba(59,130,246,.26);
-      color:#dbeafe;
-    }
+        .search .icon {
+            color: var(--sub);
+            font-size: 14px;
+            user-select: none;
+            flex: 0 0 auto
+        }
 
-    select{
-      padding:10px 12px;border-radius:14px;border:1px solid rgba(148,163,184,.16);
-      background:rgba(51,65,85,.35);color:var(--text);
-      outline:none;font-weight:800;font-size:12px;max-width:44vw;
-    }
-    .list-body{padding:14px;background:rgba(15,23,42,.20)}
+        .appbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 0 1 auto;
+            justify-content: flex-end;
+            min-width: 0;
+            flex-wrap: wrap;
+        }
 
-    /* ===== 基金卡片 ===== */
-    .fund-card{
-      background:var(--card);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      width:100%;
-      border:1px solid rgba(148,163,184,.12);
-      margin:0 auto 14px;
-      overflow:hidden;
-      transform:translateZ(0);
-      transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-      position:relative;
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, .12);
+            border: 1px solid rgba(148, 163, 184, .14);
+            font-size: 12px;
+            color: var(--sub);
+            user-select: none;
+            white-space: nowrap;
+            max-width: 160px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-      -webkit-touch-callout:none;
-      -webkit-user-select:none;
-      user-select:none;
-    }
-    .fund-card:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(0,0,0,.36);border-color:rgba(99,102,241,.22)}
+        .chip b {
+            color: var(--text);
+            font-weight: 700
+        }
 
-    .fund-header{
-      display:flex;justify-content:space-between;align-items:flex-start;
-      cursor:pointer;
-      padding:14px 14px 12px;
-      background:rgba(30,41,59,.58);
-      border-bottom:1px solid rgba(148,163,184,.10);
-      gap:12px;
-      -webkit-user-select:none;user-select:none;
-      -webkit-touch-callout:none;
-    }
-    .fund-header-left{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
-    .fund-header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
-    .fund-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .fund-title{
-      font-weight:900;font-size:14px;letter-spacing:.2px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      max-width:520px;
-    }
-    .code{font-size:12px;color:var(--sub);font-weight:900}
+        button {
+            padding: 9px 12px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #fff;
+            font-size: 13px;
+            background: rgba(51, 65, 85, .55);
+            border: 1px solid rgba(148, 163, 184, .14);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            white-space: nowrap;
+            min-width: 0;
+            transition: transform .16s ease, box-shadow .16s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .25);
+        }
 
-    .badge{
-      display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;
-      font-size:12px;font-weight:900;
-      border:1px solid rgba(148,163,184,.16);
-      background:rgba(148,163,184,.10);
-      color:var(--sub);user-select:none;
-    }
-    .badge.live{background:rgba(59,130,246,.16);border-color:rgba(59,130,246,.22);color:#dbeafe}
-    .badge.real{background:rgba(34,197,94,.14);border-color:rgba(34,197,94,.22);color:#dcfce7}
-    .badge.closed{background:rgba(148,163,184,.10);border-color:rgba(148,163,184,.16);color:#e2e8f0}
-    .badge.unknown{background:rgba(244,63,94,.10);border-color:rgba(244,63,94,.18);color:#fecdd3}
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 18px rgba(0, 0, 0, .32)
+        }
 
-    .chips{display:flex;flex-wrap:wrap;gap:8px}
-    .chip2{
-      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
-      font-size:12px;color:var(--sub);
-      background:rgba(15,23,42,.35);
-      border:1px solid rgba(148,163,184,.12);
-      user-select:none;
-    }
-    .chip2 b{color:var(--text)}
+        button:active {
+            transform: translateY(0) scale(.99)
+        }
 
-    .fund-profit{font-weight:1000;font-size:14px;text-align:right;font-variant-numeric:tabular-nums}
-    .blink{animation:blink 1s infinite}
-    @keyframes blink{0%,50%,100%{opacity:1}25%,75%{opacity:.25}}
+        .btn-primary {
+            background: linear-gradient(45deg, #10b981, var(--accent));
+            border: none
+        }
 
-    .arrow{display:inline-block;transition:transform .28s ease;font-weight:900;color:var(--sub);user-select:none}
-    .arrow.open{transform:rotate(90deg)}
+        .btn-accent {
+            background: linear-gradient(45deg, var(--accent), var(--accent2));
+            border: none
+        }
 
-    .today-wrap{display:flex;flex-direction:column;gap:6px}
-    .today-row{display:flex;align-items:center;gap:8px;line-height:1.25;flex-wrap:wrap}
-    .pill{
-      display:inline-flex;align-items:center;
-      padding:2px 9px;border-radius:999px;
-      font-size:11px;font-weight:1000;
-      background:rgba(148,163,184,.12);
-      color:var(--sub);
-      border:1px solid rgba(148,163,184,.16);
-      user-select:none;
-    }
-    .pill.estimate{background:rgba(59,130,246,.18);border-color:rgba(59,130,246,.22);color:#dbeafe}
-    .pill.real{background:rgba(34,197,94,.14);border-color:rgba(34,197,94,.22);color:#dcfce7}
-    .pill.closed{background:rgba(148,163,184,.10);border-color:rgba(148,163,184,.16);color:#e2e8f0}
+        .btn-danger {
+            background: linear-gradient(45deg, #ef4444, #f43f5e);
+            border: none
+        }
 
-    .kpi{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 10px;border-radius:14px;
-      background:rgba(15,23,42,.35);
-      border:1px solid rgba(148,163,184,.12);
-    }
-    .kpi .label{color:var(--sub);font-size:12px;font-weight:900}
-    .kpi .v{font-weight:1000;font-variant-numeric:tabular-nums}
-    .kpi .v.up{color:var(--up)}
-    .kpi .v.down{color:var(--down)}
-    .kpi .v.neutral{color:var(--sub)}
+        .btn-ghost {
+            background: rgba(51, 65, 85, .35)
+        }
 
-    .updated-tag{
-      display:inline-flex;align-items:center;gap:4px;
-      font-size:11px;color:#a7f3d0;
-      background:rgba(16,185,129,.12);
-      border:1px solid rgba(16,185,129,.18);
-      padding:2px 8px;border-radius:999px;
-      user-select:none;
-    }
+        .wrap {
+            width: 100%;
+            max-width: 980px;
+            margin: 0 auto
+        }
 
-    .fund-buttons{
-      display:flex;gap:10px;
-      padding:12px 14px 14px;
-      background:rgba(15,23,42,.36);
-      border-bottom:1px solid rgba(148,163,184,.10);
-    }
-    .fund-buttons button{flex:1;border-radius:14px}
+        h1 {
+            display: none
+        }
 
-    .fund-body{
-      max-height:0;opacity:0;transform:translateY(-6px);
-      overflow:hidden;
-      transition:max-height .32s ease, opacity .22s ease, transform .22s ease;
-      background:rgba(15,23,42,.45);
-      padding:0 14px;
-    }
-    .fund-body.open{max-height:420px;opacity:1;transform:translateY(0);padding:12px 14px 14px}
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            border: 1px solid rgba(148, 163, 184, .12);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-bottom: 14px;
+        }
 
-    .period-box{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-    button.period{
-      padding:7px 10px;font-size:12px;background:rgba(51,65,85,.35);
-      border-radius:12px;border:1px solid rgba(148,163,184,.14);box-shadow:none;
-    }
-    button.period.active{background:rgba(59,130,246,.22);border-color:rgba(59,130,246,.26)}
+        #loginPanel.card {
+            max-width: 480px;
+            margin-top: 14px
+        }
 
-    canvas.chart{
-      margin-top:6px;width:100% !important;height:auto;border-radius:14px;
-      background:rgba(15,23,42,.30);
-      border:1px solid rgba(148,163,184,.10);
-    }
+        input {
+            padding: 11px 12px;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, .16);
+            background: rgba(51, 65, 85, .35);
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 14px;
+            outline: none;
+        }
 
-    .skeleton{position:relative;overflow:hidden;background:rgba(148,163,184,.10);border:1px solid rgba(148,163,184,.12);border-radius:14px}
-    .skeleton::after{
-      content:"";position:absolute;top:0;left:-60%;width:60%;height:100%;
-      background:linear-gradient(90deg,transparent,rgba(241,245,249,.10),transparent);
-      animation:shimmer 1.2s infinite;
-    }
-    @keyframes shimmer{100%{left:120%}}
-    .loading{text-align:center;padding:12px;color:var(--sub)}
+        input:focus {
+            border-color: rgba(59, 130, 246, .45);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, .14)
+        }
 
-    /* 全局 Loading */
-    #globalLoading{
-      position:fixed;inset:0;
-      background:rgba(0,0,0,.55);
-      color:#fff;font-size:16px;
-      display:none;justify-content:center;align-items:center;
-      z-index:9999;flex-direction:column;
-      backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
-    }
-    #globalLoading .spinner{
-      border:4px solid rgba(255,255,255,.20);
-      border-top:4px solid var(--accent);
-      border-radius:50%;
-      width:38px;height:38px;
-      animation:spin 1s linear infinite;
-      margin-bottom:10px;
-    }
-    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px
+        }
 
-    /* ===== 排序模式提示 ===== */
-    .edit-hint{font-size:12px;color:var(--sub);display:none;align-items:center;gap:8px;margin-top:6px}
-    .edit-hint.show{display:flex}
+        .form-row input {
+            flex: 1;
+            margin-bottom: 0
+        }
 
-    /* ✅ SortableJS：拖拽手柄（只在排序模式显示） */
-    .drag-handle{
-      display:none;
-      user-select:none;
-      padding:5px 10px;border-radius:12px;
-      background:rgba(51,65,85,.35);
-      border:1px solid rgba(148,163,184,.12);
-      color:var(--sub);font-weight:1000;
-      cursor:grab;
+        .form-row button {
+            flex: 1
+        }
 
-      /* ✅ 关键：防止浏览器把它当滚动/选择 */
-      touch-action:none;
-      -webkit-user-select:none;
-      -webkit-touch-callout:none;
-    }
-    .edit-mode .drag-handle{display:inline-flex}
-    .edit-mode .fund-card{animation:wiggle .9s infinite}
-    @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(.22deg)}75%{transform:rotate(-.22deg)}}
+        .overview {
+            display: flex;
+            flex-direction: column;
+            gap: 12px
+        }
 
-    /* ✅ SortableJS 拖拽视觉 */
-    .drag-ghost-js{
-      opacity:.92;
-      border:1px solid rgba(99,102,241,.35);
-      box-shadow:0 18px 38px rgba(0,0,0,.45);
-    }
-    .drag-chosen{transform:scale(.995)}
-    .drag-dragging{opacity:.95}
+        .grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center
+        }
 
-    /* Toast */
-    #toast{
-      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
-      z-index:10000;display:none;
-      padding:10px 12px;border-radius:14px;
-      background:rgba(15,23,42,.85);
-      border:1px solid rgba(148,163,184,.18);
-      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-      box-shadow:0 12px 28px rgba(0,0,0,.35);
-      color:var(--text);font-size:13px;
-      max-width:calc(100vw - 24px);
-      white-space:nowrap;
-    }
-    #toast.success{border-color:rgba(34,197,94,.35)}
-    #toast.error{border-color:rgba(244,63,94,.40)}
-    #toast .sub{color:var(--sub);font-size:12px;margin-left:6px}
+        .stat-card {
+            flex: 1 1 170px;
+            min-width: 160px;
+            padding: 12px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, .35);
+            border: 1px solid rgba(148, 163, 184, .12);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, .18);
+            text-align: center;
+        }
 
-    button[disabled]{opacity:.65;cursor:not-allowed;transform:none!important}
-    .spin{display:inline-block;animation:spin 1s linear infinite}
+        .stat-title {
+            font-size: 12px;
+            color: var(--sub)
+        }
 
-    /* ✅ 拖拽中彻底禁止选中/复制菜单 */
-    body.dragging, body.dragging *{
-      -webkit-user-select:none !important;
-      user-select:none !important;
-      -webkit-touch-callout:none !important;
-    }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 900;
+            margin-top: 6px;
+            font-variant-numeric: tabular-nums
+        }
 
-    /* 移动端 */
-    @media (max-width:560px){
-      .appbar{flex-direction:column;align-items:stretch;gap:10px}
-      .appbar-top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
-      .appbar-center{max-width:none}
-      .appbar-actions{min-width:0;gap:8px;flex-wrap:nowrap}
-      .chip{display:none}
-      .brand{min-width:0}
-      .fund-title{max-width:220px}
-      button{padding:9px 10px}
-    }
-    @media (max-width:360px){
-      #btnRefreshText,#btnThemeText{display:none}
-      button{padding:9px 10px}
-    }
+        .up {
+            color: var(--up)
+        }
 
-    .logged-out .appbar{display:none !important;}
-  </style>
+        .down {
+            color: var(--down)
+        }
+
+        .small {
+            font-size: 12px;
+            color: var(--sub)
+        }
+
+        .mono {
+            font-variant-numeric: tabular-nums
+        }
+
+        .drag-tip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: var(--sub);
+            background: rgba(148, 163, 184, .10);
+            border: 1px solid rgba(148, 163, 184, .14);
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        /* ===== 持仓列表容器 ===== */
+        .list-card {
+            padding: 0;
+            overflow: hidden
+        }
+
+        .list-head {
+            padding: 14px 14px 10px;
+            background: rgba(30, 41, 59, .40);
+            border-bottom: 1px solid rgba(148, 163, 184, .10);
+        }
+
+        .list-head-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px
+        }
+
+        .list-title {
+            font-size: 14px;
+            font-weight: 900
+        }
+
+        .list-sub {
+            font-size: 12px;
+            color: var(--sub)
+        }
+
+        .list-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            min-width: 0
+        }
+
+        .list-controls-left {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .list-controls-right {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap
+        }
+
+        .seg-scroll {
+            display: flex;
+            gap: 8px;
+            padding: 6px;
+            border-radius: 16px;
+            background: rgba(51, 65, 85, .28);
+            border: 1px solid rgba(148, 163, 184, .12);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .seg-scroll::-webkit-scrollbar {
+            display: none
+        }
+
+        .seg-scroll button {
+            padding: 8px 12px;
+            border-radius: 999px;
+            box-shadow: none;
+            border: 1px solid rgba(148, 163, 184, .12);
+            background: rgba(15, 23, 42, .20);
+            color: var(--sub);
+            font-weight: 900;
+            font-size: 12px;
+
+            /* ✅ 防止被挤压导致文字变形 */
+            flex: 0 0 auto;
+            width: max-content;
+            min-width: max-content;
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .seg-scroll button.active {
+            background: rgba(59, 130, 246, .22);
+            border-color: rgba(59, 130, 246, .26);
+            color: #dbeafe;
+        }
+
+        select {
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(148, 163, 184, .16);
+            background: rgba(51, 65, 85, .35);
+            color: var(--text);
+            outline: none;
+            font-weight: 800;
+            font-size: 12px;
+            max-width: 44vw;
+        }
+
+        .list-body {
+            padding: 14px;
+            background: rgba(15, 23, 42, .20)
+        }
+
+        /* ===== 基金卡片 ===== */
+        .fund-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            border: 1px solid rgba(148, 163, 184, .12);
+            margin: 0 auto 14px;
+            overflow: hidden;
+            transform: translateZ(0);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+            position: relative;
+
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .fund-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, .36);
+            border-color: rgba(99, 102, 241, .22)
+        }
+
+        .fund-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            cursor: pointer;
+            padding: 14px 14px 12px;
+            background: rgba(30, 41, 59, .58);
+            border-bottom: 1px solid rgba(148, 163, 184, .10);
+            gap: 12px;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        .fund-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 0
+        }
+
+        .fund-header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px
+        }
+
+        .fund-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .fund-title {
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: .2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 520px;
+        }
+
+        .code {
+            font-size: 12px;
+            color: var(--sub);
+            font-weight: 900
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            border: 1px solid rgba(148, 163, 184, .16);
+            background: rgba(148, 163, 184, .10);
+            color: var(--sub);
+            user-select: none;
+        }
+
+        .badge.live {
+            background: rgba(59, 130, 246, .16);
+            border-color: rgba(59, 130, 246, .22);
+            color: #dbeafe
+        }
+
+        .badge.real {
+            background: rgba(34, 197, 94, .14);
+            border-color: rgba(34, 197, 94, .22);
+            color: #dcfce7
+        }
+
+        .badge.closed {
+            background: rgba(148, 163, 184, .10);
+            border-color: rgba(148, 163, 184, .16);
+            color: #e2e8f0
+        }
+
+        .badge.unknown {
+            background: rgba(244, 63, 94, .10);
+            border-color: rgba(244, 63, 94, .18);
+            color: #fecdd3
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .chip2 {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: var(--sub);
+            background: rgba(15, 23, 42, .35);
+            border: 1px solid rgba(148, 163, 184, .12);
+            user-select: none;
+        }
+
+        .chip2 b {
+            color: var(--text)
+        }
+
+        .fund-profit {
+            font-weight: 1000;
+            font-size: 14px;
+            text-align: right;
+            font-variant-numeric: tabular-nums
+        }
+
+        .blink {
+            animation: blink 1s infinite
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% {
+                opacity: 1
+            }
+            25%, 75% {
+                opacity: .25
+            }
+        }
+
+        .arrow {
+            display: inline-block;
+            transition: transform .28s ease;
+            font-weight: 900;
+            color: var(--sub);
+            user-select: none
+        }
+
+        .arrow.open {
+            transform: rotate(90deg)
+        }
+
+        .today-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px
+        }
+
+        .today-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1.25;
+            flex-wrap: wrap
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 1000;
+            background: rgba(148, 163, 184, .12);
+            color: var(--sub);
+            border: 1px solid rgba(148, 163, 184, .16);
+            user-select: none;
+        }
+
+        .pill.estimate {
+            background: rgba(59, 130, 246, .18);
+            border-color: rgba(59, 130, 246, .22);
+            color: #dbeafe
+        }
+
+        .pill.real {
+            background: rgba(34, 197, 94, .14);
+            border-color: rgba(34, 197, 94, .22);
+            color: #dcfce7
+        }
+
+        .pill.closed {
+            background: rgba(148, 163, 184, .10);
+            border-color: rgba(148, 163, 184, .16);
+            color: #e2e8f0
+        }
+
+        .kpi {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, .35);
+            border: 1px solid rgba(148, 163, 184, .12);
+        }
+
+        .kpi .label {
+            color: var(--sub);
+            font-size: 12px;
+            font-weight: 900
+        }
+
+        .kpi .v {
+            font-weight: 1000;
+            font-variant-numeric: tabular-nums
+        }
+
+        .kpi .v.up {
+            color: var(--up)
+        }
+
+        .kpi .v.down {
+            color: var(--down)
+        }
+
+        .kpi .v.neutral {
+            color: var(--sub)
+        }
+
+        .updated-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #a7f3d0;
+            background: rgba(16, 185, 129, .12);
+            border: 1px solid rgba(16, 185, 129, .18);
+            padding: 2px 8px;
+            border-radius: 999px;
+            user-select: none;
+        }
+
+        .fund-buttons {
+            display: flex;
+            gap: 10px;
+            padding: 12px 14px 14px;
+            background: rgba(15, 23, 42, .36);
+            border-bottom: 1px solid rgba(148, 163, 184, .10);
+        }
+
+        .fund-buttons button {
+            flex: 1;
+            border-radius: 14px
+        }
+
+        .fund-body {
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-6px);
+            overflow: hidden;
+            transition: max-height .32s ease, opacity .22s ease, transform .22s ease;
+            background: rgba(15, 23, 42, .45);
+            padding: 0 14px;
+        }
+
+        .fund-body.open {
+            max-height: 420px;
+            opacity: 1;
+            transform: translateY(0);
+            padding: 12px 14px 14px
+        }
+
+        .period-box {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 8px
+        }
+
+        button.period {
+            padding: 7px 10px;
+            font-size: 12px;
+            background: rgba(51, 65, 85, .35);
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, .14);
+            box-shadow: none;
+        }
+
+        button.period.active {
+            background: rgba(59, 130, 246, .22);
+            border-color: rgba(59, 130, 246, .26)
+        }
+
+        canvas.chart {
+            margin-top: 6px;
+            width: 100% !important;
+            height: auto;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, .30);
+            border: 1px solid rgba(148, 163, 184, .10);
+        }
+
+        .skeleton {
+            position: relative;
+            overflow: hidden;
+            background: rgba(148, 163, 184, .10);
+            border: 1px solid rgba(148, 163, 184, .12);
+            border-radius: 14px
+        }
+
+        .skeleton::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -60%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(241, 245, 249, .10), transparent);
+            animation: shimmer 1.2s infinite;
+        }
+
+        @keyframes shimmer {
+            100% {
+                left: 120%
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 12px;
+            color: var(--sub)
+        }
+
+        /* 全局 Loading */
+        #globalLoading {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            color: #fff;
+            font-size: 16px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        #globalLoading .spinner {
+            border: 4px solid rgba(255, 255, 255, .20);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0)
+            }
+            100% {
+                transform: rotate(360deg)
+            }
+        }
+
+        /* ===== 排序模式提示 ===== */
+        .edit-hint {
+            font-size: 12px;
+            color: var(--sub);
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px
+        }
+
+        .edit-hint.show {
+            display: flex
+        }
+
+        /* ✅ SortableJS：拖拽手柄（只在排序模式显示） */
+        .drag-handle {
+            display: none;
+            user-select: none;
+            padding: 5px 10px;
+            border-radius: 12px;
+            background: rgba(51, 65, 85, .35);
+            border: 1px solid rgba(148, 163, 184, .12);
+            color: var(--sub);
+            font-weight: 1000;
+            cursor: grab;
+
+            /* ✅ 关键：防止浏览器把它当滚动/选择 */
+            touch-action: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        .edit-mode .drag-handle {
+            display: inline-flex
+        }
+
+        .edit-mode .fund-card {
+            animation: wiggle .9s infinite
+        }
+
+        @keyframes wiggle {
+            0%, 100% {
+                transform: rotate(0)
+            }
+            25% {
+                transform: rotate(.22deg)
+            }
+            75% {
+                transform: rotate(-.22deg)
+            }
+        }
+
+        /* ✅ SortableJS 拖拽视觉 */
+        .drag-ghost-js {
+            opacity: .92;
+            border: 1px solid rgba(99, 102, 241, .35);
+            box-shadow: 0 18px 38px rgba(0, 0, 0, .45);
+        }
+
+        .drag-chosen {
+            transform: scale(.995)
+        }
+
+        .drag-dragging {
+            opacity: .95
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            transform: translateX(-50%);
+            z-index: 10000;
+            display: none;
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, .85);
+            border: 1px solid rgba(148, 163, 184, .18);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, .35);
+            color: var(--text);
+            font-size: 13px;
+            max-width: calc(100vw - 24px);
+            white-space: nowrap;
+        }
+
+        #toast.success {
+            border-color: rgba(34, 197, 94, .35)
+        }
+
+        #toast.error {
+            border-color: rgba(244, 63, 94, .40)
+        }
+
+        #toast .sub {
+            color: var(--sub);
+            font-size: 12px;
+            margin-left: 6px
+        }
+
+        button[disabled] {
+            opacity: .65;
+            cursor: not-allowed;
+            transform: none !important
+        }
+
+        .spin {
+            display: inline-block;
+            animation: spin 1s linear infinite
+        }
+
+        /* ✅ 拖拽中彻底禁止选中/复制菜单 */
+        body.dragging, body.dragging * {
+            -webkit-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none !important;
+        }
+
+        /* 移动端 */
+        @media (max-width: 560px) {
+            .appbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px
+            }
+
+            .appbar-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                min-width: 0
+            }
+
+            .appbar-center {
+                max-width: none
+            }
+
+            .appbar-actions {
+                min-width: 0;
+                gap: 8px;
+                flex-wrap: nowrap
+            }
+
+            .chip {
+                display: none
+            }
+
+            .brand {
+                min-width: 0
+            }
+
+            .fund-title {
+                max-width: 220px
+            }
+
+            button {
+                padding: 9px 10px
+            }
+        }
+
+        @media (max-width: 360px) {
+            #btnRefreshText, #btnThemeText {
+                display: none
+            }
+
+            button {
+                padding: 9px 10px
+            }
+        }
+
+        .logged-out .appbar {
+            display: none !important;
+        }
+
+        /* ===== 拖拽高亮提示（方案A） ===== */
+
+        /* 进入排序模式后，卡片整体轻微“可拖拽”提示 */
+        .edit-mode .fund-card {
+            outline: 1px solid rgba(148, 163, 184, .10);
+        }
+
+        /* 手柄禁用态（未进入排序 / 非自定义排序） */
+        .drag-handle.is-disabled {
+            opacity: .45;
+            filter: grayscale(30%);
+            cursor: not-allowed;
+            border-color: rgba(244, 63, 94, .25);
+            background: rgba(244, 63, 94, .08);
+        }
+
+        /* ✅ 拖拽中：高亮正在拖的卡片（chosen） */
+        .drag-chosen {
+            outline: 2px solid rgba(59, 130, 246, .45);
+            box-shadow: 0 0 0 6px rgba(59, 130, 246, .10);
+        }
+
+        /* ✅ 拖拽中的“幽灵” */
+        .drag-ghost-js {
+            outline: 2px solid rgba(99, 102, 241, .40);
+            box-shadow: 0 18px 38px rgba(0, 0, 0, .45), 0 0 0 6px rgba(99, 102, 241, .08);
+        }
+
+        /* ✅ 吸附/插入位置：SortableJS 的 fallbackClass / fallback 位置提示 */
+        .drag-fallback {
+            outline: 2px dashed rgba(59, 130, 246, .55);
+        }
+
+        /* ✅ 占位符（吸附区域）高亮：SortableJS 的 “空位” */
+        .drag-placeholder {
+            height: 72px; /* 会被 JS 覆盖成真实高度 */
+            border-radius: var(--radius);
+            border: 2px dashed rgba(59, 130, 246, .45);
+            background: rgba(59, 130, 246, .10);
+            box-shadow: inset 0 0 0 3px rgba(59, 130, 246, .08);
+            margin-bottom: 14px;
+        }
+
+        /* ✅ 拖拽中在列表上方加一个轻提示（可选） */
+        #list.dragging-zone {
+            position: relative;
+        }
+
+        #list.dragging-zone::before {
+            content: "拖动到想要的位置松手即可";
+            position: sticky;
+            top: 0;
+            display: block;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            border-radius: 14px;
+            font-size: 12px;
+            color: rgba(219, 234, 254, .95);
+            background: rgba(59, 130, 246, .14);
+            border: 1px solid rgba(59, 130, 246, .22);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+    </style>
 </head>
 
 <body class="logged-out">
-  <!-- AppBar -->
-  <div class="appbar" id="appbar">
+<!-- AppBar -->
+<div class="appbar" id="appbar">
     <div class="appbar-top" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-      <div class="brand">
-        <div class="logo">DU</div>
-        <div class="title">
-          <b>爱理财的DU</b>
-          <span id="subTitle">Portfolio Dashboard</span>
+        <div class="brand">
+            <div class="logo">DU</div>
+            <div class="title">
+                <b>爱理财的DU</b>
+                <span id="subTitle">Portfolio Dashboard</span>
+            </div>
         </div>
-      </div>
 
-      <div class="appbar-actions">
-        <span class="chip">👤 <b id="userNameTop">未登录</b></span>
-        <button class="btn-ghost" id="btnRefresh" title="立即刷新">⟳ <span id="btnRefreshText">刷新</span></button>
-        <button class="btn-ghost" id="btnTheme" title="切换主题">🎨 <span id="btnThemeText">主题</span></button>
-        <button class="btn-danger" id="btnLogout" style="display:none;">退出</button>
-      </div>
+        <div class="appbar-actions">
+            <span class="chip">👤 <b id="userNameTop">未登录</b></span>
+            <button class="btn-ghost" id="btnRefresh" title="立即刷新">⟳ <span id="btnRefreshText">刷新</span></button>
+            <button class="btn-ghost" id="btnTheme" title="切换主题">🎨 <span id="btnThemeText">主题</span></button>
+            <button class="btn-danger" id="btnLogout" style="display:none;">退出</button>
+        </div>
     </div>
 
     <div class="appbar-center">
-      <div class="search">
-        <span class="icon">🔎</span>
-        <input id="searchInput" placeholder="搜索基金名称 / 代码…"/>
-        <span class="icon" id="searchClear" style="display:none; cursor:pointer;">✕</span>
-      </div>
+        <div class="search">
+            <span class="icon">🔎</span>
+            <input id="searchInput" placeholder="搜索基金名称 / 代码…"/>
+            <span class="icon" id="searchClear" style="display:none; cursor:pointer;">✕</span>
+        </div>
     </div>
-  </div>
+</div>
 
-  <div class="wrap">
+<div class="wrap">
     <!-- 登录 -->
     <div id="loginPanel" class="card">
-      <h2 style="text-align:center; margin-bottom:10px;">登录 / 注册</h2>
-      <input id="username" placeholder="用户名"/>
-      <input id="password" type="password" placeholder="密码"/>
-      <div class="form-row">
-        <button class="btn-accent" onclick="loginUser()">登录</button>
-        <button class="btn-ghost" onclick="registerUser()">注册</button>
-      </div>
+        <h2 style="text-align:center; margin-bottom:10px;">登录 / 注册</h2>
+        <input id="username" placeholder="用户名"/>
+        <input id="password" type="password" placeholder="密码"/>
+        <div class="form-row">
+            <button class="btn-accent" onclick="loginUser()">登录</button>
+            <button class="btn-ghost" onclick="registerUser()">注册</button>
+        </div>
     </div>
 
     <!-- App -->
     <div id="app" style="display:none;">
-      <!-- 组合概览 -->
-      <div class="card overview">
-        <div style="display:flex; justify-content: space-between; align-items:flex-start; gap:10px; flex-wrap: wrap;">
-          <div style="display:flex; align-items:center; gap:10px; flex-wrap: wrap;">
-            <b style="font-size:14px;">📌 组合概览</b>
-            <span class="small" id="lastUpdatedText">—</span>
-          </div>
-          <div style="display:flex; gap:10px; align-items:center;">
-            <span class="drag-tip" id="dragTip">💡 提示：长按卡片进入排序，再拖拽“≡”手柄排序</span>
-          </div>
-        </div>
-
-        <div class="edit-hint" id="editHint">已进入排序：拖拽“≡”调整顺序；松手自动保存。点击空白处可退出</div>
-
-        <div class="grid" style="margin-top:10px;">
-          <div class="stat-card">
-            <div class="stat-title">总资产</div>
-            <div class="stat-value" id="totalAsset">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">总盈亏</div>
-            <div class="stat-value" id="totalProfit">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">收益率</div>
-            <div class="stat-value" id="totalPercent">0%</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">今日总收益</div>
-            <div class="stat-value" id="todayProfit">0</div>
-          </div>
-        </div>
-
-        <div id="todayExtra" style="display:none; margin-top:10px;">
-          <div class="today-row">
-            <span class="pill estimate">预估</span>
-            <span class="kpi"><span class="label">今日总收益</span><span class="v neutral mono" id="todayEstTotal">—</span></span>
-          </div>
-          <div class="today-row" style="margin-top:6px;">
-            <span class="pill real">实际</span>
-            <span class="kpi"><span class="label">今日总收益</span><span class="v neutral mono" id="todayRealTotal">—</span></span>
-            <span class="updated-tag" id="todayRealUpdated" style="display:none;">✅ 已更新</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 添加持仓 -->
-      <div class="card">
-        <div style="display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; gap:10px;">
-          <h3>添加持仓</h3>
-          <span class="small">支持代码 / 买入价 / 份额</span>
-        </div>
-        <div class="form-row">
-          <input id="code" placeholder="基金代码"/>
-          <input id="price" placeholder="买入价格"/>
-          <input id="amount" placeholder="份额"/>
-          <button class="btn-primary" onclick="addFund()">➕ 添加</button>
-        </div>
-      </div>
-
-      <!-- 持仓列表 -->
-      <div class="card list-card">
-        <div class="list-head">
-          <div class="list-head-top">
-            <div class="list-title">持仓列表</div>
-            <div class="list-sub" id="resultCount">—</div>
-          </div>
-
-          <div class="list-controls">
-            <div class="list-controls-left">
-              <div class="seg-scroll" id="filterSeg">
-                <button class="active" data-filter="all">全部</button>
-                <button data-filter="up">盈利</button>
-                <button data-filter="down">亏损</button>
-                <button data-filter="closed">未开盘</button>
-                <button data-filter="updated">已更新</button>
-              </div>
+        <!-- 组合概览 -->
+        <div class="card overview">
+            <div style="display:flex; justify-content: space-between; align-items:flex-start; gap:10px; flex-wrap: wrap;">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap: wrap;">
+                    <b style="font-size:14px;">📌 组合概览</b>
+                    <span class="small" id="lastUpdatedText">—</span>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <span class="drag-tip" id="dragTip">💡 提示：长按卡片进入排序，再拖拽“≡”手柄排序</span>
+                </div>
             </div>
-            <div class="list-controls-right">
-              <select id="sortSelect" title="排序（视图层，不影响自定义顺序）">
-                <option value="custom">自定义顺序</option>
-                <option value="holding_desc">按持有金额↓</option>
-                <option value="profit_desc">按总盈亏↓</option>
-                <option value="percent_desc">按收益率↓</option>
-                <option value="today_est_desc">按今日预估收益↓</option>
-                <option value="today_real_desc">按今日实际收益↓</option>
-              </select>
+
+            <div class="edit-hint" id="editHint">已进入排序：拖拽“≡”调整顺序；松手自动保存。点击空白处可退出</div>
+
+            <div class="grid" style="margin-top:10px;">
+                <div class="stat-card">
+                    <div class="stat-title">总资产</div>
+                    <div class="stat-value" id="totalAsset">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">总盈亏</div>
+                    <div class="stat-value" id="totalProfit">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">收益率</div>
+                    <div class="stat-value" id="totalPercent">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">今日总收益</div>
+                    <div class="stat-value" id="todayProfit">0</div>
+                </div>
             </div>
-          </div>
+
+            <div id="todayExtra" style="display:none; margin-top:10px;">
+                <div class="today-row">
+                    <span class="pill estimate">预估</span>
+                    <span class="kpi"><span class="label">今日总收益</span><span class="v neutral mono"
+                                                                                 id="todayEstTotal">—</span></span>
+                </div>
+                <div class="today-row" style="margin-top:6px;">
+                    <span class="pill real">实际</span>
+                    <span class="kpi"><span class="label">今日总收益</span><span class="v neutral mono"
+                                                                                 id="todayRealTotal">—</span></span>
+                    <span class="updated-tag" id="todayRealUpdated" style="display:none;">✅ 已更新</span>
+                </div>
+            </div>
         </div>
 
-        <div class="list-body">
-          <div id="list"></div>
+        <!-- 添加持仓 -->
+        <div class="card">
+            <div style="display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; gap:10px;">
+                <h3>添加持仓</h3>
+                <span class="small">支持代码 / 买入价 / 份额</span>
+            </div>
+            <div class="form-row">
+                <input id="code" placeholder="基金代码"/>
+                <input id="price" placeholder="买入价格"/>
+                <input id="amount" placeholder="份额"/>
+                <button class="btn-primary" onclick="addFund()">➕ 添加</button>
+            </div>
         </div>
-      </div>
 
-      <div class="card">
-        <h3 style="margin-bottom:10px;">资产占比</h3>
-        <canvas id="pieChart" height="200"></canvas>
-      </div>
+        <!-- 持仓列表 -->
+        <div class="card list-card">
+            <div class="list-head">
+                <div class="list-head-top">
+                    <div class="list-title">持仓列表</div>
+                    <div class="list-sub" id="resultCount">—</div>
+                </div>
+
+                <div class="list-controls">
+                    <div class="list-controls-left">
+                        <div class="seg-scroll" id="filterSeg">
+                            <button class="active" data-filter="all">全部</button>
+                            <button data-filter="up">盈利</button>
+                            <button data-filter="down">亏损</button>
+                            <button data-filter="closed">未开盘</button>
+                            <button data-filter="updated">已更新</button>
+                        </div>
+                    </div>
+                    <div class="list-controls-right">
+                        <select id="sortSelect" title="排序（视图层，不影响自定义顺序）">
+                            <option value="custom">自定义顺序</option>
+                            <option value="holding_desc">按持有金额↓</option>
+                            <option value="profit_desc">按总盈亏↓</option>
+                            <option value="percent_desc">按收益率↓</option>
+                            <option value="today_est_desc">按今日预估收益↓</option>
+                            <option value="today_real_desc">按今日实际收益↓</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="list-body">
+                <div id="list"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom:10px;">资产占比</h3>
+            <canvas id="pieChart" height="200"></canvas>
+        </div>
     </div>
-  </div>
+</div>
 
-  <!-- 全局 Loading -->
-  <div id="globalLoading">
+<!-- 全局 Loading -->
+<div id="globalLoading">
     <div class="spinner"></div>
     <div>正在加载，请稍候...</div>
-  </div>
+</div>
 
-  <!-- Toast -->
-  <div id="toast"></div>
+<!-- Toast -->
+<div id="toast"></div>
 
-  <script>
+<script>
     let chartCache = {};
     let pieChart = null;
 
@@ -638,111 +1300,131 @@
     // 长按进入排序（不负责拖拽，拖拽交给 Sortable）
     let longPressTimer = null;
 
-    function orderKey(){ return "fund_order_" + (currentUserName || "guest"); }
-    function themeKey(){ return "du_theme"; }
-
-    function showLoading(msg="加载中..."){
-      const l = document.getElementById("globalLoading");
-      l.style.display="flex";
-      l.querySelector("div:last-child").innerText = msg;
-    }
-    function hideLoading(){ document.getElementById("globalLoading").style.display="none"; }
-
-    async function fetchWithLoading(url, options={}, msg="加载中..."){
-      try{
-        showLoading(msg);
-        const res = await fetch(url, options);
-        hideLoading();
-        return res;
-      }catch(e){
-        hideLoading();
-        alert("请求失败："+e);
-        throw e;
-      }
-    }
-    async function fetchSilent(url, options={}){ return fetch(url, options); }
-
-    function fmtPercent(v){
-      if(v===null || v===undefined) return "—";
-      const n = parseFloat(v);
-      if(isNaN(n)) return "—";
-      return (n>=0?"+":"") + n.toFixed(2) + "%";
-    }
-    function fmtMoney(v){
-      if(v===null || v===undefined) return "—";
-      const n = parseFloat(v);
-      if(isNaN(n)) return "—";
-      return (n>=0?"+":"") + n.toFixed(2);
-    }
-    function signClass(v){
-      const n = parseFloat(v);
-      if(isNaN(n)) return "neutral";
-      if(n>0) return "up";
-      if(n<0) return "down";
-      return "neutral";
-    }
-    function arrowIcon(v){
-      const n = parseFloat(v);
-      if(isNaN(n)) return "•";
-      if(n>0) return "↑";
-      if(n<0) return "↓";
-      return "→";
+    function orderKey() {
+        return "fund_order_" + (currentUserName || "guest");
     }
 
-    function isClosed(f){ return f.market_status === "closed"; }
-    function isUpdated(f){
-      return (f.today_real_percent !== null && f.today_real_percent !== undefined) ||
-             (f.today_real_profit !== null && f.today_real_profit !== undefined) ||
-             (f.market_status === "real");
+    function themeKey() {
+        return "du_theme";
     }
 
-    function applyTheme(theme){
-      document.documentElement.setAttribute("data-theme", theme);
-      localStorage.setItem(themeKey(), theme);
-    }
-    function toggleTheme(){
-      const cur = localStorage.getItem(themeKey()) || "default";
-      applyTheme(cur === "default" ? "gold" : "default");
+    function showLoading(msg = "加载中...") {
+        const l = document.getElementById("globalLoading");
+        l.style.display = "flex";
+        l.querySelector("div:last-child").innerText = msg;
     }
 
-    function badgeFor(f){
-      if (f.market_status === "open_estimate") return `<span class="badge live">🕘 盘中</span>`;
-      if (f.market_status === "real") return `<span class="badge real">✅ 已更新</span>`;
-      if (f.market_status === "closed") return `<span class="badge closed">💤 未开盘</span>`;
-      return `<span class="badge unknown">⚠️ 异常</span>`;
+    function hideLoading() {
+        document.getElementById("globalLoading").style.display = "none";
     }
 
-    function kpiHtml(label, valueText, valueRaw){
-      const cls = signClass(valueRaw);
-      const icon = arrowIcon(valueRaw);
-      return `
+    async function fetchWithLoading(url, options = {}, msg = "加载中...") {
+        try {
+            showLoading(msg);
+            const res = await fetch(url, options);
+            hideLoading();
+            return res;
+        } catch (e) {
+            hideLoading();
+            alert("请求失败：" + e);
+            throw e;
+        }
+    }
+
+    async function fetchSilent(url, options = {}) {
+        return fetch(url, options);
+    }
+
+    function fmtPercent(v) {
+        if (v === null || v === undefined) return "—";
+        const n = parseFloat(v);
+        if (isNaN(n)) return "—";
+        return (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
+    }
+
+    function fmtMoney(v) {
+        if (v === null || v === undefined) return "—";
+        const n = parseFloat(v);
+        if (isNaN(n)) return "—";
+        return (n >= 0 ? "+" : "") + n.toFixed(2);
+    }
+
+    function signClass(v) {
+        const n = parseFloat(v);
+        if (isNaN(n)) return "neutral";
+        if (n > 0) return "up";
+        if (n < 0) return "down";
+        return "neutral";
+    }
+
+    function arrowIcon(v) {
+        const n = parseFloat(v);
+        if (isNaN(n)) return "•";
+        if (n > 0) return "↑";
+        if (n < 0) return "↓";
+        return "→";
+    }
+
+    function isClosed(f) {
+        return f.market_status === "closed";
+    }
+
+    function isUpdated(f) {
+        return (f.today_real_percent !== null && f.today_real_percent !== undefined) ||
+            (f.today_real_profit !== null && f.today_real_profit !== undefined) ||
+            (f.market_status === "real");
+    }
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem(themeKey(), theme);
+    }
+
+    function toggleTheme() {
+        const cur = localStorage.getItem(themeKey()) || "default";
+        applyTheme(cur === "default" ? "gold" : "default");
+    }
+
+    function badgeFor(f) {
+        if (f.market_status === "open_estimate") return `<span class="badge live">🕘 盘中</span>`;
+        if (f.market_status === "real") return `<span class="badge real">✅ 已更新</span>`;
+        if (f.market_status === "closed") return `<span class="badge closed">💤 未开盘</span>`;
+        return `<span class="badge unknown">⚠️ 异常</span>`;
+    }
+
+    function kpiHtml(label, valueText, valueRaw) {
+        const cls = signClass(valueRaw);
+        const icon = arrowIcon(valueRaw);
+        return `
         <span class="kpi">
           <span class="label">${label}</span>
           <span class="v ${cls} mono">${icon} ${valueText}</span>
         </span>`;
     }
-    function estimateRowHtml(f){
-      if(isClosed(f)){
-        return `<div class="today-row">
+
+    function estimateRowHtml(f) {
+        if (isClosed(f)) {
+            return `<div class="today-row">
           <span class="pill closed">未开盘</span>
           <span class="small">预估：未开盘</span>
         </div>`;
-      }
-      return `<div class="today-row">
+        }
+        return `<div class="today-row">
         <span class="pill estimate">预估</span>
         ${kpiHtml("涨跌", fmtPercent(f.today_estimate_percent), f.today_estimate_percent)}
         ${kpiHtml("收益", fmtMoney(f.today_estimate_profit), f.today_estimate_profit)}
       </div>`;
     }
-    function realRowHtml(f){
-      if(isClosed(f)){
-        return `<div class="today-row">
+
+    function realRowHtml(f) {
+        if (isClosed(f)) {
+            return `<div class="today-row">
           <span class="pill closed">未开盘</span>
           <span class="small">实际：未开盘</span>
         </div>`;
-      }
-      const updated = isUpdated(f);
-      return `<div class="today-row">
+        }
+        const updated = isUpdated(f);
+        return `<div class="today-row">
         <span class="pill real">实际</span>
         ${kpiHtml("涨跌", fmtPercent(f.today_real_percent), f.today_real_percent)}
         ${kpiHtml("收益", fmtMoney(f.today_real_profit), f.today_real_profit)}
@@ -750,326 +1432,342 @@
       </div>`;
     }
 
-    function orderGet(){
-      try{
-        const raw = localStorage.getItem(orderKey());
-        const arr = JSON.parse(raw);
-        return Array.isArray(arr) ? arr : null;
-      }catch(e){ return null; }
-    }
-    function orderSave(arr){
-      localStorage.setItem(orderKey(), JSON.stringify(arr));
-    }
-
-    function escapeHtml(s){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+    function orderGet() {
+        try {
+            const raw = localStorage.getItem(orderKey());
+            const arr = JSON.parse(raw);
+            return Array.isArray(arr) ? arr : null;
+        } catch (e) {
+            return null;
+        }
     }
 
-    function showToast(text, type="success", subText=""){
-      const t = document.getElementById("toast");
-      if(!t) return;
-      t.className = type;
-      t.innerHTML = `${escapeHtml(text)}${subText ? `<span class="sub">${escapeHtml(subText)}</span>` : ""}`;
-      t.style.display = "block";
-      clearTimeout(t._timer);
-      t._timer = setTimeout(()=>{ t.style.display="none"; }, 1800);
-    }
-    function setRefreshBtnLoading(on){
-      const btn = document.getElementById("btnRefresh");
-      if(!btn) return;
-      if(on){
-        btn.disabled = true;
-        btn.innerHTML = `<span class="spin">⟳</span> <span id="btnRefreshText">刷新中…</span>`;
-      }else{
-        btn.disabled = false;
-        btn.innerHTML = `⟳ <span id="btnRefreshText">刷新</span>`;
-      }
+    function orderSave(arr) {
+        localStorage.setItem(orderKey(), JSON.stringify(arr));
     }
 
-    function setLoggedInUI(isIn){
-      document.body.classList.toggle("logged-out", !isIn);
-      const appbar = document.getElementById("appbar");
-      if(appbar) appbar.style.display = isIn ? "flex" : "none";
-      document.getElementById("btnLogout").style.display = isIn ? "inline-flex" : "none";
-      document.getElementById("userNameTop").innerText = isIn ? currentUserName : "未登录";
+    function escapeHtml(s) {
+        return String(s)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    function showToast(text, type = "success", subText = "") {
+        const t = document.getElementById("toast");
+        if (!t) return;
+        t.className = type;
+        t.innerHTML = `${escapeHtml(text)}${subText ? `<span class="sub">${escapeHtml(subText)}</span>` : ""}`;
+        t.style.display = "block";
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => {
+            t.style.display = "none";
+        }, 1800);
+    }
+
+    function setRefreshBtnLoading(on) {
+        const btn = document.getElementById("btnRefresh");
+        if (!btn) return;
+        if (on) {
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spin">⟳</span> <span id="btnRefreshText">刷新中…</span>`;
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = `⟳ <span id="btnRefreshText">刷新</span>`;
+        }
+    }
+
+    function setLoggedInUI(isIn) {
+        document.body.classList.toggle("logged-out", !isIn);
+        const appbar = document.getElementById("appbar");
+        if (appbar) appbar.style.display = isIn ? "flex" : "none";
+        document.getElementById("btnLogout").style.display = isIn ? "inline-flex" : "none";
+        document.getElementById("userNameTop").innerText = isIn ? currentUserName : "未登录";
     }
 
     // ✅ SortableJS 初始化（渲染完列表后调用）
-    function initSortable(){
-      const list = document.getElementById("list");
-      if(!list) return;
+    function setHandleDisabledUI(disabled) {
+        document.querySelectorAll(".drag-handle").forEach(h => {
+            h.classList.toggle("is-disabled", disabled);
+            h.title = disabled ? "先长按进入排序，且排序必须为「自定义顺序」" : "拖拽排序";
+        });
+    }
 
-      if(sortable) sortable.destroy();
+    function initSortable() {
+        const list = document.getElementById("list");
+        if (!list) return;
 
-      sortable = new Sortable(list, {
-        animation: 160,
-        handle: ".drag-handle",
-        draggable: ".fund-card",
-        ghostClass: "drag-ghost-js",
-        chosenClass: "drag-chosen",
-        dragClass: "drag-dragging",
+        if (sortable) sortable.destroy();
 
-        // 手机端关键参数
-        delay: 200,
-        delayOnTouchOnly: true,
-        touchStartThreshold: 8,
-        fallbackOnBody: true,
-        forceFallback: true,
-        scroll: true,
-        scrollSensitivity: 80,
-        scrollSpeed: 14,
+        sortable = new Sortable(list, {
+            animation: 160,
+            handle: ".drag-handle",
+            draggable: ".fund-card",
 
-        onStart: () => document.body.classList.add("dragging"),
-        onEnd: () => {
-          document.body.classList.remove("dragging");
-          const codes = [...document.querySelectorAll(".fund-card[data-code]")].map(c=>c.dataset.code);
-          orderSave(codes);
-          showToast("排序已保存", "success");
-        }
-      });
+            ghostClass: "drag-ghost-js",
+            chosenClass: "drag-chosen",
+            dragClass: "drag-dragging",
 
-      // ✅ 只有“自定义顺序 + 排序模式”才允许拖
-      sortable.option("disabled", !(editMode && activeSort === "custom"));
+            // ✅ 吸附占位高亮（关键）
+            fallbackClass: "drag-fallback",
+            // 这个类会加在占位元素上
+            // Sortable 的占位元素 className 固定是 "sortable-fallback"/"sortable-ghost"等，
+            // 我们用 onMove 动态插一个占位 DIV 更稳定（见下面 onStart/onMove）
+            forceFallback: true,
+            fallbackOnBody: true,
+
+            // 手机端关键参数
+            delay: 200,
+            delayOnTouchOnly: true,
+            touchStartThreshold: 8,
+
+            scroll: true,
+            scrollSensitivity: 90,
+            scrollSpeed: 16,
+
+            onStart: (evt) => {
+                document.body.classList.add("dragging");
+                list.classList.add("dragging-zone");
+
+                // ✅ 生成一个“吸附占位”提示块（跟你看到的大块空白不同，这是可控的）
+                const item = evt.item;
+                const r = item.getBoundingClientRect();
+                const ph = document.createElement("div");
+                ph.className = "drag-placeholder";
+                ph.style.height = r.height + "px";
+                ph.dataset.ph = "1";
+                item.parentNode.insertBefore(ph, item.nextSibling);
+            },
+
+            onMove: (evt) => {
+                // ✅ 跟随移动，把占位符放到“将要插入的位置”
+                const ph = list.querySelector('.drag-placeholder[data-ph="1"]');
+                if (!ph) return true;
+
+                const related = evt.related; // 目标元素
+                if (!related || !related.parentNode) return true;
+
+                // 插入规则：如果将要插到 related 前面，就把 ph 放到 related 前
+                // 否则放到 related 后面
+                if (evt.willInsertAfter) {
+                    related.parentNode.insertBefore(ph, related.nextSibling);
+                } else {
+                    related.parentNode.insertBefore(ph, related);
+                }
+                return true;
+            },
+
+            onEnd: () => {
+                document.body.classList.remove("dragging");
+                list.classList.remove("dragging-zone");
+
+                // 移除占位符
+                const ph = list.querySelector('.drag-placeholder[data-ph="1"]');
+                if (ph && ph.parentNode) ph.parentNode.removeChild(ph);
+
+                // 保存顺序
+                const codes = [...document.querySelectorAll(".fund-card[data-code]")].map(c => c.dataset.code);
+                orderSave(codes);
+                showToast("排序已保存", "success");
+            }
+        });
+
+        // ✅ 只有“自定义顺序 + 排序模式”才允许拖
+        const disabled = !(editMode && activeSort === "custom");
+        sortable.option("disabled", disabled);
+        setHandleDisabledUI(disabled);
     }
 
     // ✅ 长按进入排序（不负责拖拽）
-    function attachLongPressToEnterEdit(header){
-      header.style.touchAction = "pan-y";
-      let sx=0, sy=0;
-      const MOVE_CANCEL_PX = 10;
+    function attachLongPressToEnterEdit(header) {
+        header.style.touchAction = "pan-y";
+        let sx = 0, sy = 0;
+        const MOVE_CANCEL_PX = 10;
 
-      header.addEventListener("pointerdown", (e)=>{
-        if(activeSort !== "custom") return;
-        if(e.button !== undefined && e.button !== 0) return;
+        header.addEventListener("pointerdown", (e) => {
+            if (activeSort !== "custom") return;
+            if (e.button !== undefined && e.button !== 0) return;
 
-        sx = e.clientX; sy = e.clientY;
-        clearTimeout(longPressTimer);
-        longPressTimer = setTimeout(()=>{
-          if(!editMode) setEditMode(true);
-        }, 320);
-      }, {passive:true});
+            sx = e.clientX;
+            sy = e.clientY;
+            clearTimeout(longPressTimer);
+            longPressTimer = setTimeout(() => {
+                if (!editMode) setEditMode(true);
+            }, 320);
+        }, {passive: true});
 
-      header.addEventListener("pointerup", ()=>{ clearTimeout(longPressTimer); }, {passive:true});
-      header.addEventListener("pointercancel", ()=>{ clearTimeout(longPressTimer); }, {passive:true});
-      header.addEventListener("pointermove", (e)=>{
-        const dx = e.clientX - sx;
-        const dy = e.clientY - sy;
-        if(Math.hypot(dx,dy) > MOVE_CANCEL_PX) clearTimeout(longPressTimer);
-      }, {passive:true});
+        header.addEventListener("pointerup", () => {
+            clearTimeout(longPressTimer);
+        }, {passive: true});
+        header.addEventListener("pointercancel", () => {
+            clearTimeout(longPressTimer);
+        }, {passive: true});
+        header.addEventListener("pointermove", (e) => {
+            const dx = e.clientX - sx;
+            const dy = e.clientY - sy;
+            if (Math.hypot(dx, dy) > MOVE_CANCEL_PX) clearTimeout(longPressTimer);
+        }, {passive: true});
     }
 
-    function setEditMode(on){
-      editMode = on;
-      const app = document.getElementById("app");
-      const hint = document.getElementById("editHint");
-      if(on){
-        if(activeSort !== "custom"){
-          activeSort = "custom";
-          document.getElementById("sortSelect").value = "custom";
+    function setEditMode(on) {
+        editMode = on;
+        const app = document.getElementById("app");
+        const hint = document.getElementById("editHint");
+        if (on) {
+            if (activeSort !== "custom") {
+                activeSort = "custom";
+                document.getElementById("sortSelect").value = "custom";
+            }
+            app.classList.add("edit-mode");
+            hint.classList.add("show");
+        } else {
+            app.classList.remove("edit-mode");
+            hint.classList.remove("show");
         }
-        app.classList.add("edit-mode");
-        hint.classList.add("show");
-      }else{
-        app.classList.remove("edit-mode");
-        hint.classList.remove("show");
-      }
-      if(sortable) sortable.option("disabled", !(editMode && activeSort === "custom"));
+        if (sortable) sortable.option("disabled", !(editMode && activeSort === "custom"));
+        setHandleDisabledUI(!(editMode && activeSort === "custom"));
     }
 
     // 页面初始化
-    window.onload = async ()=>{
-      applyTheme(localStorage.getItem(themeKey()) || "default");
-      document.getElementById("btnTheme").onclick = toggleTheme;
-      document.getElementById("btnLogout").onclick = logoutUser;
+    window.onload = async () => {
+        applyTheme(localStorage.getItem(themeKey()) || "default");
+        document.getElementById("btnTheme").onclick = toggleTheme;
+        document.getElementById("btnLogout").onclick = logoutUser;
 
-      document.getElementById("btnRefresh").onclick = async ()=>{ await refreshRealtime(true, true); };
+        document.getElementById("btnRefresh").onclick = async () => {
+            await refreshRealtime(true, true);
+        };
 
-      // 搜索：✅ 修复重复（renderToken）已在 renderListFromCache 内
-      const s = document.getElementById("searchInput");
-      const sc = document.getElementById("searchClear");
-      s.addEventListener("input", ()=>{
-        sc.style.display = s.value.trim() ? "inline" : "none";
-        renderListFromCache();
-      });
-      sc.addEventListener("click", ()=>{
-        s.value = "";
-        sc.style.display = "none";
-        renderListFromCache();
-      });
+        // 搜索：✅ 修复重复（renderToken）已在 renderListFromCache 内
+        const s = document.getElementById("searchInput");
+        const sc = document.getElementById("searchClear");
+        s.addEventListener("input", () => {
+            sc.style.display = s.value.trim() ? "inline" : "none";
+            renderListFromCache();
+        });
+        sc.addEventListener("click", () => {
+            s.value = "";
+            sc.style.display = "none";
+            renderListFromCache();
+        });
 
-      // 筛选
-      document.getElementById("filterSeg").addEventListener("click", (e)=>{
-        const btn = e.target.closest("button");
-        if(!btn) return;
-        [...document.querySelectorAll("#filterSeg button")].forEach(b=>b.classList.remove("active"));
-        btn.classList.add("active");
-        activeFilter = btn.dataset.filter;
-        renderListFromCache();
-      });
+        // 筛选
+        document.getElementById("filterSeg").addEventListener("click", (e) => {
+            const btn = e.target.closest("button");
+            if (!btn) return;
+            [...document.querySelectorAll("#filterSeg button")].forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            activeFilter = btn.dataset.filter;
+            renderListFromCache();
+        });
 
-      // 排序
-      document.getElementById("sortSelect").addEventListener("change", (e)=>{
-        activeSort = e.target.value;
-        if(activeSort !== "custom" && editMode) setEditMode(false);
-        if(sortable) sortable.option("disabled", !(editMode && activeSort === "custom"));
-        renderListFromCache();
-      });
+        // 排序
+        document.getElementById("sortSelect").addEventListener("change", (e) => {
+            activeSort = e.target.value;
+            if (activeSort !== "custom" && editMode) setEditMode(false);
+            if (sortable) sortable.option("disabled", !(editMode && activeSort === "custom"));
+            setHandleDisabledUI(!(editMode && activeSort === "custom"));
+            renderListFromCache();
+        });
 
-      // 点击空白处退出排序模式
-      document.addEventListener("pointerdown", (e)=>{
-        if(!editMode) return;
-        const inCard = e.target.closest(".fund-card");
-        const inKeep = e.target.closest("#sortSelect") || e.target.closest("#filterSeg");
-        if(!inCard && !inKeep) setEditMode(false);
-      }, {capture:true});
+        // 点击空白处退出排序模式
+        document.addEventListener("pointerdown", (e) => {
+            if (!editMode) return;
+            const inCard = e.target.closest(".fund-card");
+            const inKeep = e.target.closest("#sortSelect") || e.target.closest("#filterSeg");
+            if (!inCard && !inKeep) setEditMode(false);
+        }, {capture: true});
 
-      // 检查登录
-      const d = await (await fetchWithLoading("/me", {}, "正在检查登录状态")).json();
-      if(d.logged_in) showApp(d.username);
-      else setLoggedInUI(false);
+        // 检查登录
+        const d = await (await fetchWithLoading("/me", {}, "正在检查登录状态")).json();
+        if (d.logged_in) showApp(d.username);
+        else setLoggedInUI(false);
     };
 
-    function showApp(username){
-      currentUserName = username;
-      setLoggedInUI(true);
-      document.getElementById("loginPanel").style.display = "none";
-      document.getElementById("app").style.display = "block";
-      loadData();
+    function showApp(username) {
+        currentUserName = username;
+        setLoggedInUI(true);
+        document.getElementById("loginPanel").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        loadData();
     }
 
-    async function registerUser(){
-      const d = await (await fetchWithLoading("/register", {
-        method:"POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({username: username.value, password: password.value})
-      }, "注册中...")).json();
-      if(d.error) alert(d.error); else alert("注册成功");
+    async function registerUser() {
+        const d = await (await fetchWithLoading("/register", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({username: username.value, password: password.value})
+        }, "注册中...")).json();
+        if (d.error) alert(d.error); else alert("注册成功");
     }
 
-    async function loginUser(){
-      const d = await (await fetchWithLoading("/login", {
-        method:"POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({username: username.value, password: password.value})
-      }, "登录中...")).json();
-      if(d.error) alert(d.error);
-      else showApp(d.username);
+    async function loginUser() {
+        const d = await (await fetchWithLoading("/login", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({username: username.value, password: password.value})
+        }, "登录中...")).json();
+        if (d.error) alert(d.error);
+        else showApp(d.username);
     }
 
-    function logoutUser(){ fetch("/logout").then(()=>location.reload()); }
+    function logoutUser() {
+        fetch("/logout").then(() => location.reload());
+    }
 
     // 持仓操作
-    async function addFund(){
-      let c = code.value.trim();
-      let p = parseFloat(price.value);
-      let a = parseFloat(amount.value);
+    async function addFund() {
+        let c = code.value.trim();
+        let p = parseFloat(price.value);
+        let a = parseFloat(amount.value);
 
-      if(!c) return alert("请输入基金代码");
-      if(isNaN(p) || p<=0) return alert("请输入正确的买入价格");
-      if(isNaN(a) || a<=0) return alert("请输入正确的份额");
+        if (!c) return alert("请输入基金代码");
+        if (isNaN(p) || p <= 0) return alert("请输入正确的买入价格");
+        if (isNaN(a) || a <= 0) return alert("请输入正确的份额");
 
-      const d = await (await fetchWithLoading("/add", {
-        method:"POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({code:c, buy_price:p, amount:a})
-      }, "添加持仓中...")).json();
+        const d = await (await fetchWithLoading("/add", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({code: c, buy_price: p, amount: a})
+        }, "添加持仓中...")).json();
 
-      if(d.error) alert(d.error);
-      else loadData();
+        if (d.error) alert(d.error);
+        else loadData();
     }
 
-    async function updatePosition(code, delta, price){
-      await fetchWithLoading("/update/" + code, {
-        method:"POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({delta, buy_price: price})
-      }, "更新持仓中...");
-      loadData();
+    async function updatePosition(code, delta, price) {
+        await fetchWithLoading("/update/" + code, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({delta, buy_price: price})
+        }, "更新持仓中...");
+        loadData();
     }
 
-    function addShares(code){
-      let n = parseFloat(prompt("加仓份额"));
-      if(!n || n<=0) return;
-      let p = parseFloat(prompt("加仓价格"));
-      if(!p || p<=0) return;
-      updatePosition(code, n, p);
+    function addShares(code) {
+        let n = parseFloat(prompt("加仓份额"));
+        if (!n || n <= 0) return;
+        let p = parseFloat(prompt("加仓价格"));
+        if (!p || p <= 0) return;
+        updatePosition(code, n, p);
     }
-    function reduceShares(code){
-      let n = parseFloat(prompt("减仓份额"));
-      if(n>0) updatePosition(code, -n);
+
+    function reduceShares(code) {
+        let n = parseFloat(prompt("减仓份额"));
+        if (n > 0) updatePosition(code, -n);
     }
-    function clearShares(code, amount){
-      if(confirm("确认清仓?")) updatePosition(code, -amount);
+
+    function clearShares(code, amount) {
+        if (confirm("确认清仓?")) updatePosition(code, -amount);
     }
 
     // 数据加载
-    async function loadData(){
-      renderSkeletonList(6);
+    async function loadData() {
+        renderSkeletonList(6);
 
-      const data = await (await fetchWithLoading("/holdings", {}, "加载持仓中...")).json();
-
-      document.getElementById("totalAsset").innerText = data.total_asset;
-      document.getElementById("totalProfit").innerText = (data.total_profit >= 0 ? "+" : "") + data.total_profit;
-      document.getElementById("totalPercent").innerText = (data.total_percent >= 0 ? "+" : "") + data.total_percent + "%";
-      document.getElementById("todayProfit").innerText = (data.today_profit >= 0 ? "+" : "") + data.today_profit;
-
-      document.getElementById("totalProfit").className = "stat-value " + (data.total_profit >= 0 ? "up" : "down");
-      document.getElementById("totalPercent").className = "stat-value " + (data.total_percent >= 0 ? "up" : "down");
-      document.getElementById("todayProfit").className = "stat-value " + (data.today_profit >= 0 ? "up" : "down");
-
-      const est = data.today_estimate_profit;
-      const real = data.today_real_profit;
-      const extra = document.getElementById("todayExtra");
-      if(est !== undefined || real !== undefined){
-        extra.style.display = "block";
-        document.getElementById("todayEstTotal").innerText = fmtMoney(est);
-        document.getElementById("todayRealTotal").innerText = fmtMoney(real);
-        document.getElementById("todayRealUpdated").style.display = (real !== null && real !== undefined) ? "inline-flex" : "none";
-      }else{
-        extra.style.display = "none";
-      }
-
-      document.getElementById("lastUpdatedText").innerText = "⏱ " + new Date().toLocaleTimeString();
-
-      fundMap.clear();
-      (data.funds || []).forEach(f => fundMap.set(f.code, f));
-
-      // 合并保存顺序
-      const saved = orderGet();
-      if(saved && saved.length){
-        const nowCodes = (data.funds || []).map(x=>x.code);
-        const merged = [];
-        saved.forEach(c=>{ if(nowCodes.includes(c)) merged.push(c); });
-        nowCodes.forEach(c=>{ if(!merged.includes(c)) merged.push(c); });
-        orderSave(merged);
-      }else{
-        orderSave((data.funds || []).map(x=>x.code));
-      }
-
-      renderListFromCache(true);
-      updatePie(data.funds || []);
-      setupObserver();
-    }
-
-    // 刷新
-    async function refreshRealtime(forceAll=false, showFeedback=false){
-      if(document.getElementById("app").style.display !== "block") return;
-
-      const startTs = Date.now();
-      try{
-        setRefreshBtnLoading(true);
-
-        const data = await (await fetchSilent("/holdings")).json();
-        if(data.error){
-          document.getElementById("lastUpdatedText").innerText = "⚠️ 刷新失败 " + new Date().toLocaleTimeString();
-          if(showFeedback) showToast("刷新失败", "error", data.error);
-          return;
-        }
+        const data = await (await fetchWithLoading("/holdings", {}, "加载持仓中...")).json();
 
         document.getElementById("totalAsset").innerText = data.total_asset;
         document.getElementById("totalProfit").innerText = (data.total_profit >= 0 ? "+" : "") + data.total_profit;
@@ -1080,69 +1778,131 @@
         document.getElementById("totalPercent").className = "stat-value " + (data.total_percent >= 0 ? "up" : "down");
         document.getElementById("todayProfit").className = "stat-value " + (data.today_profit >= 0 ? "up" : "down");
 
-        document.getElementById("lastUpdatedText").innerText = "✅ 已刷新 " + new Date().toLocaleTimeString();
+        const est = data.today_estimate_profit;
+        const real = data.today_real_profit;
+        const extra = document.getElementById("todayExtra");
+        if (est !== undefined || real !== undefined) {
+            extra.style.display = "block";
+            document.getElementById("todayEstTotal").innerText = fmtMoney(est);
+            document.getElementById("todayRealTotal").innerText = fmtMoney(real);
+            document.getElementById("todayRealUpdated").style.display = (real !== null && real !== undefined) ? "inline-flex" : "none";
+        } else {
+            extra.style.display = "none";
+        }
 
+        document.getElementById("lastUpdatedText").innerText = "⏱ " + new Date().toLocaleTimeString();
+
+        fundMap.clear();
         (data.funds || []).forEach(f => fundMap.set(f.code, f));
 
-        const codesToUpdate = forceAll ? (data.funds || []).map(x=>x.code) : [...visibleCodes];
-        codesToUpdate.forEach(code=>{
-          const f = fundMap.get(code);
-          const card = document.getElementById("fund_" + code);
-          if(f && card) applyFundToCard(card, f);
-        });
-
-        updatePie(data.funds || []);
-        if(showFeedback){
-          showToast("刷新成功", "success", `${Date.now()-startTs}ms`);
+        // 合并保存顺序
+        const saved = orderGet();
+        if (saved && saved.length) {
+            const nowCodes = (data.funds || []).map(x => x.code);
+            const merged = [];
+            saved.forEach(c => {
+                if (nowCodes.includes(c)) merged.push(c);
+            });
+            nowCodes.forEach(c => {
+                if (!merged.includes(c)) merged.push(c);
+            });
+            orderSave(merged);
+        } else {
+            orderSave((data.funds || []).map(x => x.code));
         }
-      }catch(e){
-        document.getElementById("lastUpdatedText").innerText = "⚠️ 刷新失败 " + new Date().toLocaleTimeString();
-        if(showFeedback) showToast("刷新失败", "error", String(e));
-      }finally{
-        setRefreshBtnLoading(false);
-      }
+
+        renderListFromCache(true);
+        updatePie(data.funds || []);
+        setupObserver();
+    }
+
+    // 刷新
+    async function refreshRealtime(forceAll = false, showFeedback = false) {
+        if (document.getElementById("app").style.display !== "block") return;
+
+        const startTs = Date.now();
+        try {
+            setRefreshBtnLoading(true);
+
+            const data = await (await fetchSilent("/holdings")).json();
+            if (data.error) {
+                document.getElementById("lastUpdatedText").innerText = "⚠️ 刷新失败 " + new Date().toLocaleTimeString();
+                if (showFeedback) showToast("刷新失败", "error", data.error);
+                return;
+            }
+
+            document.getElementById("totalAsset").innerText = data.total_asset;
+            document.getElementById("totalProfit").innerText = (data.total_profit >= 0 ? "+" : "") + data.total_profit;
+            document.getElementById("totalPercent").innerText = (data.total_percent >= 0 ? "+" : "") + data.total_percent + "%";
+            document.getElementById("todayProfit").innerText = (data.today_profit >= 0 ? "+" : "") + data.today_profit;
+
+            document.getElementById("totalProfit").className = "stat-value " + (data.total_profit >= 0 ? "up" : "down");
+            document.getElementById("totalPercent").className = "stat-value " + (data.total_percent >= 0 ? "up" : "down");
+            document.getElementById("todayProfit").className = "stat-value " + (data.today_profit >= 0 ? "up" : "down");
+
+            document.getElementById("lastUpdatedText").innerText = "✅ 已刷新 " + new Date().toLocaleTimeString();
+
+            (data.funds || []).forEach(f => fundMap.set(f.code, f));
+
+            const codesToUpdate = forceAll ? (data.funds || []).map(x => x.code) : [...visibleCodes];
+            codesToUpdate.forEach(code => {
+                const f = fundMap.get(code);
+                const card = document.getElementById("fund_" + code);
+                if (f && card) applyFundToCard(card, f);
+            });
+
+            updatePie(data.funds || []);
+            if (showFeedback) {
+                showToast("刷新成功", "success", `${Date.now() - startTs}ms`);
+            }
+        } catch (e) {
+            document.getElementById("lastUpdatedText").innerText = "⚠️ 刷新失败 " + new Date().toLocaleTimeString();
+            if (showFeedback) showToast("刷新失败", "error", String(e));
+        } finally {
+            setRefreshBtnLoading(false);
+        }
     }
 
     // 视图（过滤/排序/搜索）
-    function getViewCodes(){
-      const search = (document.getElementById("searchInput").value || "").trim().toLowerCase();
-      const order = orderGet() || [...fundMap.keys()];
+    function getViewCodes() {
+        const search = (document.getElementById("searchInput").value || "").trim().toLowerCase();
+        const order = orderGet() || [...fundMap.keys()];
 
-      let arr = order.filter(code=>{
-        const f = fundMap.get(code);
-        if(!f) return false;
+        let arr = order.filter(code => {
+            const f = fundMap.get(code);
+            if (!f) return false;
 
-        const key = (String(f.name||"") + " " + String(f.code||"")).toLowerCase();
-        if(search && !key.includes(search)) return false;
+            const key = (String(f.name || "") + " " + String(f.code || "")).toLowerCase();
+            if (search && !key.includes(search)) return false;
 
-        if(activeFilter === "up") return (parseFloat(f.profit||0) >= 0);
-        if(activeFilter === "down") return (parseFloat(f.profit||0) < 0);
-        if(activeFilter === "closed") return (f.market_status === "closed");
-        if(activeFilter === "updated") return isUpdated(f);
-        return true;
-      });
+            if (activeFilter === "up") return (parseFloat(f.profit || 0) >= 0);
+            if (activeFilter === "down") return (parseFloat(f.profit || 0) < 0);
+            if (activeFilter === "closed") return (f.market_status === "closed");
+            if (activeFilter === "updated") return isUpdated(f);
+            return true;
+        });
 
-      if(activeSort !== "custom"){
-        const val = (f)=>{
-          if(activeSort === "holding_desc") return parseFloat(f.holding||0);
-          if(activeSort === "profit_desc") return parseFloat(f.profit||0);
-          if(activeSort === "percent_desc") return parseFloat(f.percent||0);
-          if(activeSort === "today_est_desc") return parseFloat(f.today_estimate_profit ?? -Infinity);
-          if(activeSort === "today_real_desc") return parseFloat(f.today_real_profit ?? -Infinity);
-          return 0;
-        };
-        arr.sort((a,b)=> val(fundMap.get(b)) - val(fundMap.get(a)));
-      }
-      return arr;
+        if (activeSort !== "custom") {
+            const val = (f) => {
+                if (activeSort === "holding_desc") return parseFloat(f.holding || 0);
+                if (activeSort === "profit_desc") return parseFloat(f.profit || 0);
+                if (activeSort === "percent_desc") return parseFloat(f.percent || 0);
+                if (activeSort === "today_est_desc") return parseFloat(f.today_estimate_profit ?? -Infinity);
+                if (activeSort === "today_real_desc") return parseFloat(f.today_real_profit ?? -Infinity);
+                return 0;
+            };
+            arr.sort((a, b) => val(fundMap.get(b)) - val(fundMap.get(a)));
+        }
+        return arr;
     }
 
-    function renderSkeletonList(n){
-      const list = document.getElementById("list");
-      list.innerHTML = "";
-      for(let i=0;i<n;i++){
-        const sk = document.createElement("div");
-        sk.className = "fund-card";
-        sk.innerHTML = `
+    function renderSkeletonList(n) {
+        const list = document.getElementById("list");
+        list.innerHTML = "";
+        for (let i = 0; i < n; i++) {
+            const sk = document.createElement("div");
+            sk.className = "fund-card";
+            sk.innerHTML = `
           <div style="padding:14px;">
             <div class="skeleton" style="height:16px; width:62%; margin-bottom:10px;"></div>
             <div class="skeleton" style="height:12px; width:48%; margin-bottom:8px;"></div>
@@ -1152,57 +1912,58 @@
               <div class="skeleton" style="height:34px; flex:1;"></div>
             </div>
           </div>`;
-        list.appendChild(sk);
-      }
+            list.appendChild(sk);
+        }
     }
 
     // ✅ 修复“搜索后重复”：renderToken 防止旧渲染继续 append
-    function renderListFromCache(){
-      const myToken = ++renderToken;
+    function renderListFromCache() {
+        const myToken = ++renderToken;
 
-      const list = document.getElementById("list");
-      const codes = getViewCodes();
-      document.getElementById("resultCount").innerText = `共 ${codes.length} 条`;
+        const list = document.getElementById("list");
+        const codes = getViewCodes();
+        document.getElementById("resultCount").innerText = `共 ${codes.length} 条`;
 
-      list.innerHTML = "";
-      if(codes.length === 0){
-        list.innerHTML = `<div class="loading">没有匹配的持仓</div>`;
-        if(sortable) sortable.destroy(), sortable=null;
-        return;
-      }
-
-      const chunkSize = 10;
-      let idx = 0;
-
-      function chunk(){
-        if(myToken !== renderToken) return; // ✅ 旧渲染作废，防止重复
-        const end = Math.min(idx + chunkSize, codes.length);
-        for(; idx<end; idx++){
-          const code = codes[idx];
-          const f = fundMap.get(code);
-          if(!f) continue;
-          list.appendChild(buildFundCard(f));
+        list.innerHTML = "";
+        if (codes.length === 0) {
+            list.innerHTML = `<div class="loading">没有匹配的持仓</div>`;
+            if (sortable) sortable.destroy(), sortable = null;
+            return;
         }
-        if(idx < codes.length){
-          requestAnimationFrame(chunk);
-        }else{
-          setupObserver();
-          initSortable(); // ✅ 渲染完再挂载拖拽
+
+        const chunkSize = 10;
+        let idx = 0;
+
+        function chunk() {
+            if (myToken !== renderToken) return; // ✅ 旧渲染作废，防止重复
+            const end = Math.min(idx + chunkSize, codes.length);
+            for (; idx < end; idx++) {
+                const code = codes[idx];
+                const f = fundMap.get(code);
+                if (!f) continue;
+                list.appendChild(buildFundCard(f));
+            }
+            if (idx < codes.length) {
+                requestAnimationFrame(chunk);
+            } else {
+                setupObserver();
+                initSortable(); // ✅ 渲染完再挂载拖拽
+            }
         }
-      }
-      requestAnimationFrame(chunk);
+
+        requestAnimationFrame(chunk);
     }
 
     // 卡片构建
-    function buildFundCard(f){
-      const div = document.createElement("div");
-      div.className = "fund-card";
-      div.id = "fund_" + f.code;
-      div.dataset.code = f.code;
+    function buildFundCard(f) {
+        const div = document.createElement("div");
+        div.className = "fund-card";
+        div.id = "fund_" + f.code;
+        div.dataset.code = f.code;
 
-      const navDate = f.nav_date || f.navDate || "—";
+        const navDate = f.nav_date || f.navDate || "—";
 
-      div.innerHTML = `
+        div.innerHTML = `
         <div class="fund-header">
           <div class="fund-header-left">
             <div class="fund-title-row">
@@ -1250,147 +2011,151 @@
         </div>
       `;
 
-      const header = div.querySelector(".fund-header");
-      const body = div.querySelector(".fund-body");
-      const arrow = div.querySelector(".arrow");
+        const header = div.querySelector(".fund-header");
+        const body = div.querySelector(".fund-body");
+        const arrow = div.querySelector(".arrow");
 
-      // 点击展开/收起（排序模式不展开）
-      header.addEventListener("click", ()=>{
-        if(editMode) return;
-        const open = body.classList.contains("open");
-        if(open){
-          body.classList.remove("open");
-          arrow.classList.remove("open");
-        }else{
-          body.classList.add("open");
-          arrow.classList.add("open");
-          loadHistory(f.code, getActivePeriod(f.code));
-        }
-      });
+        // 点击展开/收起（排序模式不展开）
+        header.addEventListener("click", () => {
+            if (editMode) return;
+            const open = body.classList.contains("open");
+            if (open) {
+                body.classList.remove("open");
+                arrow.classList.remove("open");
+            } else {
+                body.classList.add("open");
+                arrow.classList.add("open");
+                loadHistory(f.code, getActivePeriod(f.code));
+            }
+        });
 
-      // ✅ 长按进入排序
-      attachLongPressToEnterEdit(header);
+        // ✅ 长按进入排序
+        attachLongPressToEnterEdit(header);
 
-      return div;
+        return div;
     }
 
-    function applyFundToCard(card, f){
-      const profitEl = card.querySelector(".fp");
-      if(profitEl) profitEl.innerText = f.profit;
+    function applyFundToCard(card, f) {
+        const profitEl = card.querySelector(".fp");
+        if (profitEl) profitEl.innerText = f.profit;
 
-      const fpWrap = card.querySelector(".fund-profit");
-      if(fpWrap){
-        fpWrap.className = "fund-profit " + (parseFloat(f.percent||0) >= 0 ? "up blink" : "down blink");
-        fpWrap.querySelector(".small").innerText = `(${parseFloat(f.percent||0) >= 0 ? "+" : ""}${f.percent}%)`;
-      }
+        const fpWrap = card.querySelector(".fund-profit");
+        if (fpWrap) {
+            fpWrap.className = "fund-profit " + (parseFloat(f.percent || 0) >= 0 ? "up blink" : "down blink");
+            fpWrap.querySelector(".small").innerText = `(${parseFloat(f.percent || 0) >= 0 ? "+" : ""}${f.percent}%)`;
+        }
 
-      const holdingEl = card.querySelector(".holding");
-      if(holdingEl) holdingEl.innerText = f.holding;
+        const holdingEl = card.querySelector(".holding");
+        if (holdingEl) holdingEl.innerText = f.holding;
 
-      const currentEl = card.querySelector(".realtime");
-      if(currentEl) currentEl.innerText = f.current;
+        const currentEl = card.querySelector(".realtime");
+        if (currentEl) currentEl.innerText = f.current;
 
-      const navDateEl = card.querySelector(".nav-date");
-      if(navDateEl) navDateEl.innerText = (f.nav_date || f.navDate || "—");
+        const navDateEl = card.querySelector(".nav-date");
+        if (navDateEl) navDateEl.innerText = (f.nav_date || f.navDate || "—");
 
-      const titleRow = card.querySelector(".fund-title-row");
-      const oldBadge = titleRow ? titleRow.querySelector(".badge") : null;
-      if(oldBadge) oldBadge.outerHTML = badgeFor(f);
+        const titleRow = card.querySelector(".fund-title-row");
+        const oldBadge = titleRow ? titleRow.querySelector(".badge") : null;
+        if (oldBadge) oldBadge.outerHTML = badgeFor(f);
 
-      const est = card.querySelector(".today-estimate-wrap");
-      const real = card.querySelector(".today-real-wrap");
-      if(est) est.innerHTML = estimateRowHtml(f);
-      if(real) real.innerHTML = realRowHtml(f);
+        const est = card.querySelector(".today-estimate-wrap");
+        const real = card.querySelector(".today-real-wrap");
+        if (est) est.innerHTML = estimateRowHtml(f);
+        if (real) real.innerHTML = realRowHtml(f);
     }
 
     // 周期/图表
-    function getActivePeriod(code){
-      const box = document.getElementById("period_" + code);
-      if(!box) return "3m";
-      for(const btn of box.children){
-        if(btn.classList.contains("active")){
-          return btn.innerText.replace(/[^\d]/g,'') + 'm';
+    function getActivePeriod(code) {
+        const box = document.getElementById("period_" + code);
+        if (!box) return "3m";
+        for (const btn of box.children) {
+            if (btn.classList.contains("active")) {
+                return btn.innerText.replace(/[^\d]/g, '') + 'm';
+            }
         }
-      }
-      return "3m";
-    }
-    function changePeriod(code, period, btn){
-      const box = document.getElementById("period_" + code);
-      [...box.children].forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      const chartDiv = document.getElementById("fund_" + code).querySelector(".fund-body");
-      if(chartDiv.classList.contains("open")) loadHistory(code, period);
+        return "3m";
     }
 
-    async function loadHistory(code, period){
-      const data = await (await fetchWithLoading(`/history/${code}/${period}`, {}, "加载历史数据中...")).json();
-      if(!data.length) return;
-
-      const canvas = document.getElementById("chart_" + code);
-      const ctx = canvas.getContext("2d");
-      if(chartCache[code]) chartCache[code].destroy();
-
-      const first = data[0].value, last = data[data.length-1].value, isUp = last >= first;
-      const gradient = ctx.createLinearGradient(0,0,0,200);
-      gradient.addColorStop(0, isUp ? "rgba(239,68,68,0.35)" : "rgba(34,197,94,0.30)");
-      gradient.addColorStop(1, "rgba(0,0,0,0)");
-
-      chartCache[code] = new Chart(ctx, {
-        type:'line',
-        data:{
-          labels:data.map(d=>d.date),
-          datasets:[{
-            data:data.map(d=>d.value),
-            borderColor: isUp ? "#ef4444" : "#22c55e",
-            backgroundColor: gradient,
-            fill:true,
-            tension:0.3,
-            pointRadius:0
-          }]
-        },
-        options:{
-          plugins:{legend:{display:false}},
-          scales:{x:{display:false}},
-          animation:{duration:400}
-        }
-      });
+    function changePeriod(code, period, btn) {
+        const box = document.getElementById("period_" + code);
+        [...box.children].forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const chartDiv = document.getElementById("fund_" + code).querySelector(".fund-body");
+        if (chartDiv.classList.contains("open")) loadHistory(code, period);
     }
 
-    function updatePie(funds){
-      if(!funds || !funds.length) return;
-      if(pieChart) pieChart.destroy();
-      pieChart = new Chart(document.getElementById("pieChart"), {
-        type:'doughnut',
-        data:{
-          labels: funds.map(f=>f.name),
-          datasets:[{ data: funds.map(f=>f.current * f.amount) }]
-        },
-        options:{ plugins:{ legend:{ labels:{ color:"rgba(241,245,249,0.9)" } } } }
-      });
+    async function loadHistory(code, period) {
+        const data = await (await fetchWithLoading(`/history/${code}/${period}`, {}, "加载历史数据中...")).json();
+        if (!data.length) return;
+
+        const canvas = document.getElementById("chart_" + code);
+        const ctx = canvas.getContext("2d");
+        if (chartCache[code]) chartCache[code].destroy();
+
+        const first = data[0].value, last = data[data.length - 1].value, isUp = last >= first;
+        const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+        gradient.addColorStop(0, isUp ? "rgba(239,68,68,0.35)" : "rgba(34,197,94,0.30)");
+        gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+        chartCache[code] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(d => d.date),
+                datasets: [{
+                    data: data.map(d => d.value),
+                    borderColor: isUp ? "#ef4444" : "#22c55e",
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                plugins: {legend: {display: false}},
+                scales: {x: {display: false}},
+                animation: {duration: 400}
+            }
+        });
+    }
+
+    function updatePie(funds) {
+        if (!funds || !funds.length) return;
+        if (pieChart) pieChart.destroy();
+        pieChart = new Chart(document.getElementById("pieChart"), {
+            type: 'doughnut',
+            data: {
+                labels: funds.map(f => f.name),
+                datasets: [{data: funds.map(f => f.current * f.amount)}]
+            },
+            options: {plugins: {legend: {labels: {color: "rgba(241,245,249,0.9)"}}}}
+        });
     }
 
     // IntersectionObserver：只更新可见卡片
-    function setupObserver(){
-      if(observer){ observer.disconnect(); observer=null; }
-      visibleCodes.clear();
+    function setupObserver() {
+        if (observer) {
+            observer.disconnect();
+            observer = null;
+        }
+        visibleCodes.clear();
 
-      observer = new IntersectionObserver((entries)=>{
-        entries.forEach(entry=>{
-          const card = entry.target;
-          const code = card.dataset.code;
-          if(!code) return;
-          if(entry.isIntersecting) visibleCodes.add(code);
-          else visibleCodes.delete(code);
-        });
-      }, {root:null, rootMargin:"200px 0px", threshold:0.05});
+        observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const card = entry.target;
+                const code = card.dataset.code;
+                if (!code) return;
+                if (entry.isIntersecting) visibleCodes.add(code);
+                else visibleCodes.delete(code);
+            });
+        }, {root: null, rootMargin: "200px 0px", threshold: 0.05});
 
-      document.querySelectorAll(".fund-card[data-code]").forEach(card=>observer.observe(card));
+        document.querySelectorAll(".fund-card[data-code]").forEach(card => observer.observe(card));
     }
 
     // 自动刷新（静默，不弹 toast）
-    setInterval(()=>{
-      if(document.getElementById("app").style.display === "block") refreshRealtime(false, false);
+    setInterval(() => {
+        if (document.getElementById("app").style.display === "block") refreshRealtime(false, false);
     }, 30000);
-  </script>
+</script>
 </body>
 </html>
