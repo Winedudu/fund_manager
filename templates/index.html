@@ -1,762 +1,1236 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-  <title>爱理财的DU</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>爱理财的DU</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <style>
-    :root{
-      --bg:#0f172a; --bg2:#0b1224;
-      --card: rgba(30,41,59,0.86);
-      --card2: rgba(15,23,42,0.72);
-      --accent:#3b82f6; --accent2:#6366f1;
-      --up:#ef4444; --down:#22c55e;
-      --text:#f1f5f9; --sub:#94a3b8;
-      --line: rgba(148,163,184,0.14);
-      --shadow: 0 10px 26px rgba(0,0,0,0.32);
-      --shadow2: 0 6px 18px rgba(0,0,0,0.28);
-      --radius:16px;
-      --radius2: 16px;
-    }
-    [data-theme="gold"]{
-      --bg:#0a0b10; --bg2:#07070b;
-      --card: rgba(20,20,24,0.86);
-      --card2: rgba(10,10,14,0.72);
-      --accent:#f59e0b; --accent2:#fbbf24;
-      --up:#f97316; --down:#22c55e;
-      --text:#f8fafc; --sub:#a1a1aa;
-      --line: rgba(161,161,170,0.14);
-      --shadow: 0 10px 26px rgba(0,0,0,0.46);
-      --shadow2: 0 6px 18px rgba(0,0,0,0.36);
-    }
+    <style>
+        :root {
+            --bg: #0f172a;
+            --bg2: #0b1224;
+            --card: rgba(30, 41, 59, 0.86);
+            --card2: rgba(15, 23, 42, 0.72);
+            --accent: #3b82f6;
+            --accent2: #6366f1;
+            --up: #ef4444;
+            --down: #22c55e;
+            --text: #f1f5f9;
+            --sub: #94a3b8;
+            --line: rgba(148, 163, 184, 0.14);
+            --shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+            --shadow2: 0 6px 18px rgba(0, 0, 0, 0.28);
+            --radius: 16px;
+            --radius2: 16px;
+        }
 
-    *{box-sizing:border-box;margin:0;padding:0;}
-    html,body{height:100%;}
-    body{
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:
-        radial-gradient(1200px 700px at 20% 0%, rgba(99,102,241,0.18), transparent 55%),
-        radial-gradient(900px 600px at 90% 10%, rgba(59,130,246,0.16), transparent 50%),
-        linear-gradient(135deg, var(--bg), #111a2f 65%, var(--bg2));
-      color: var(--text);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:14px 12px 28px 12px;
-      position:relative;
-      overflow-x:hidden;
-    }
+        [data-theme="gold"] {
+            --bg: #0a0b10;
+            --bg2: #07070b;
+            --card: rgba(20, 20, 24, 0.86);
+            --card2: rgba(10, 10, 14, 0.72);
+            --accent: #f59e0b;
+            --accent2: #fbbf24;
+            --up: #f97316;
+            --down: #22c55e;
+            --text: #f8fafc;
+            --sub: #a1a1aa;
+            --line: rgba(161, 161, 170, 0.14);
+            --shadow: 0 10px 26px rgba(0, 0, 0, 0.46);
+            --shadow2: 0 6px 18px rgba(0, 0, 0, 0.36);
+        }
 
-    /* ===== Appbar ===== */
-    .appbar{
-      position: sticky;
-      top: 10px;
-      z-index: 50;
-      width: 100%;
-      max-width: 980px;
-      margin: 0 auto 14px auto;
-      border-radius: 22px;
-      padding: 10px 12px;
-      background: rgba(15,23,42,0.68);
-      border: 1px solid rgba(148,163,184,0.12);
-      box-shadow: var(--shadow2);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content: space-between;
-      min-width:0;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-      flex: 0 1 auto;
-    }
-    .logo{
-      width:36px;height:36px;border-radius:12px;
-      background: linear-gradient(135deg,var(--accent),var(--accent2));
-      box-shadow:0 10px 18px rgba(59,130,246,0.24);
-      display:grid;place-items:center;
-      font-weight:900;color:white;user-select:none;
-      flex:0 0 auto;
-    }
-    .brand .title{
-      display:flex;flex-direction:column;line-height:1.1;min-width:0;
-    }
-    .brand .title b{
-      font-size:14px;letter-spacing:.3px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      max-width:40vw;
-    }
-    .brand .title span{
-      font-size:12px;color:var(--sub);
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      max-width:46vw;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    .appbar-center{
-      flex:1;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      max-width:520px;
-      min-width:0;
-    }
-    .search{
-      flex:1;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding:10px 12px;
-      border-radius:16px;
-      background: rgba(51,65,85,0.45);
-      border:1px solid rgba(148,163,184,0.14);
-      min-width:0;
-    }
-    .search input{
-      flex:1;background:transparent;border:none;outline:none;
-      color:var(--text);font-size:14px;min-width:0;
-    }
-    .search .icon{color:var(--sub);font-size:14px;user-select:none;flex:0 0 auto;}
+        html, body {
+            height: 100%;
+        }
 
-    .appbar-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex:0 1 auto;
-      justify-content:flex-end;
-      min-width:0;
-      flex-wrap: wrap;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(1200px 700px at 20% 0%, rgba(99, 102, 241, 0.18), transparent 55%),
+            radial-gradient(900px 600px at 90% 10%, rgba(59, 130, 246, 0.16), transparent 50%),
+            linear-gradient(135deg, var(--bg), #111a2f 65%, var(--bg2));
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 14px 12px 28px 12px;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-    .chip{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:8px 10px;border-radius:999px;
-      background: rgba(148,163,184,0.12);
-      border: 1px solid rgba(148,163,184,0.14);
-      font-size:12px;color:var(--sub);
-      user-select:none;white-space:nowrap;
-      max-width:160px; overflow:hidden; text-overflow:ellipsis;
-    }
-    .chip b{color:var(--text);font-weight:700;}
+        /* ===== Appbar ===== */
+        .appbar {
+            position: sticky;
+            top: 10px;
+            z-index: 50;
+            width: 100%;
+            max-width: 980px;
+            margin: 0 auto 14px auto;
+            border-radius: 22px;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.68);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            box-shadow: var(--shadow2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 0;
+        }
 
-    button{
-      padding:9px 12px;
-      border:none;border-radius:14px;cursor:pointer;
-      font-weight:700;color:white;
-      transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
-      box-shadow:0 4px 10px rgba(0,0,0,0.25);
-      font-size:13px;
-      background: rgba(51,65,85,0.55);
-      border:1px solid rgba(148,163,184,0.14);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      white-space:nowrap;
-      min-width:0;
-    }
-    button:hover{transform:translateY(-2px);box-shadow:0 10px 18px rgba(0,0,0,0.32);}
-    button:active{transform:translateY(0) scale(0.99);}
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 0 1 auto;
+        }
 
-    .btn-primary{background: linear-gradient(45deg,#10b981,var(--accent));border:none;}
-    .btn-accent{background: linear-gradient(45deg,var(--accent),var(--accent2));border:none;}
-    .btn-danger{background: linear-gradient(45deg,#ef4444,#f43f5e);border:none;}
-    .btn-ghost{background: rgba(51,65,85,0.35);}
+        .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            box-shadow: 0 10px 18px rgba(59, 130, 246, 0.24);
+            display: grid;
+            place-items: center;
+            font-weight: 900;
+            color: white;
+            user-select: none;
+            flex: 0 0 auto;
+        }
 
-    .wrap{width:100%;max-width:980px;margin:0 auto;}
-    h1{display:none;}
-    .card{
-      background: var(--card);
-      border-radius: var(--radius);
-      padding:16px;
-      box-shadow: var(--shadow);
-      width:100%;
-      border:1px solid rgba(148,163,184,0.12);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      margin-bottom:14px;
-    }
-    #loginPanel.card{max-width:480px;margin-top:14px;}
+        .brand .title {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+            min-width: 0;
+        }
 
-    input{
-      padding:11px 12px;width:100%;
-      border-radius:12px;
-      border:1px solid rgba(148,163,184,0.16);
-      background: rgba(51,65,85,0.35);
-      color:white;margin-bottom:8px;font-size:14px;outline:none;
-    }
-    input:focus{
-      border-color: rgba(59,130,246,0.45);
-      box-shadow: 0 0 0 4px rgba(59,130,246,0.14);
-    }
+        .brand .title b {
+            font-size: 14px;
+            letter-spacing: .3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 40vw;
+        }
 
-    .form-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
-    .form-row input{flex:1;margin-bottom:0;}
-    .form-row button{flex:1;}
+        .brand .title span {
+            font-size: 12px;
+            color: var(--sub);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 46vw;
+        }
 
-    .overview{display:flex;flex-direction:column;gap:12px;}
-    .grid{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
-    .stat-card{
-      flex:1 1 170px;min-width:160px;
-      padding:12px;border-radius:16px;
-      background: rgba(15,23,42,0.35);
-      border:1px solid rgba(148,163,184,0.12);
-      box-shadow:0 6px 14px rgba(0,0,0,0.18);
-      text-align:center;
-    }
-    .stat-title{font-size:12px;color:var(--sub);}
-    .stat-value{
-      font-size:20px;font-weight:900;margin-top:6px;
-      font-variant-numeric: tabular-nums;
-    }
-    .up{color:var(--up);}
-    .down{color:var(--down);}
+        .appbar-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 520px;
+            min-width: 0;
+        }
 
-    .drag-tip{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 10px;border-radius:999px;
-      font-size:12px;color:var(--sub);
-      background: rgba(148,163,184,0.10);
-      border:1px solid rgba(148,163,184,0.14);
-      user-select:none;white-space:nowrap;
-    }
+        .search {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 16px;
+            background: rgba(51, 65, 85, 0.45);
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            min-width: 0;
+        }
 
-    /* ===== list card ===== */
-    .list-card{padding:0;overflow:hidden;}
-    .list-head{
-      padding:14px 14px 10px 14px;
-      background: rgba(30,41,59,0.40);
-      border-bottom: 1px solid rgba(148,163,184,0.10);
-    }
-    .list-head-top{
-      display:flex;justify-content:space-between;align-items:center;
-      gap:10px;flex-wrap:wrap;margin-bottom:10px;
-    }
-    .list-title{font-size:14px;font-weight:900;}
-    .list-sub{font-size:12px;color:var(--sub);}
+        .search input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-size: 14px;
+            min-width: 0;
+        }
 
-    .list-controls{
-      display:flex;gap:10px;align-items:center;justify-content:space-between;
-      flex-wrap:nowrap;min-width:0;
-    }
-    .list-controls-left{
-      flex:1 1 auto;min-width:0;
-      display:flex;align-items:center;gap:10px;
-    }
-    .list-controls-right{
-      flex:0 0 auto;
-      display:flex;align-items:center;gap:10px;
-      white-space:nowrap;
-    }
+        .search .icon {
+            color: var(--sub);
+            font-size: 14px;
+            user-select: none;
+            flex: 0 0 auto;
+        }
 
-    /* ✅ seg scroll：按钮不被压扁、不换行 */
-    .seg-scroll{
-      display:flex;gap:8px;padding:6px;border-radius:16px;
-      background: rgba(51,65,85,0.28);
-      border:1px solid rgba(148,163,184,0.12);
-      overflow-x:auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width:none;
-      flex:1 1 auto;
-      min-width:0;
-    }
-    .seg-scroll::-webkit-scrollbar{display:none;}
-    .seg-scroll button{
-      padding:8px 12px;border-radius:999px;
-      box-shadow:none;
-      border:1px solid rgba(148,163,184,0.12);
-      background: rgba(15,23,42,0.20);
-      color:var(--sub);
-      font-weight:900;
-      font-size:12px;
-      flex: 0 0 auto;
-      width:max-content;
-      min-width:max-content;
-      white-space:nowrap;
-      line-height:1;
-    }
-    .seg-scroll button.active{
-      background: rgba(59,130,246,0.22);
-      border-color: rgba(59,130,246,0.26);
-      color:#dbeafe;
-    }
+        .appbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 0 1 auto;
+            justify-content: flex-end;
+            min-width: 0;
+            flex-wrap: wrap;
+        }
 
-    select{
-      padding:10px 12px;border-radius:14px;
-      border:1px solid rgba(148,163,184,0.16);
-      background: rgba(51,65,85,0.35);
-      color:var(--text);outline:none;
-      font-weight:800;font-size:12px;
-      max-width:44vw;
-    }
-    .list-body{padding:14px;background: rgba(15,23,42,0.20);}
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.12);
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            font-size: 12px;
+            color: var(--sub);
+            user-select: none;
+            white-space: nowrap;
+            max-width: 160px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-    /* ===== Fund card ===== */
-    .fund-card{
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      width:100%;
-      border:1px solid rgba(148,163,184,0.12);
-      margin:0 auto 14px auto;
-      overflow:hidden;
-      transform: translateZ(0);
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-      position:relative;
-      -webkit-touch-callout:none;
-      -webkit-user-select:none;
-      user-select:none;
-    }
-    .fund-card:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 14px 28px rgba(0,0,0,0.36);
-      border-color: rgba(99,102,241,0.22);
-    }
+        .chip b {
+            color: var(--text);
+            font-weight: 700;
+        }
 
-    .fund-header{
-      display:flex;justify-content:space-between;align-items:flex-start;
-      cursor:pointer;
-      padding:14px 14px 12px 14px;
-      background: rgba(30,41,59,0.58);
-      border-bottom: 1px solid rgba(148,163,184,0.10);
-      gap:12px;
-      -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
-    }
-    .fund-header-left{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;}
-    .fund-header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+        button {
+            padding: 9px 12px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            color: white;
+            transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            font-size: 13px;
+            background: rgba(51, 65, 85, 0.55);
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            white-space: nowrap;
+            min-width: 0;
+        }
 
-    .fund-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-    .fund-title{
-      font-weight:900;font-size:14px;letter-spacing:.2px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      max-width:520px;
-    }
-    .code{font-size:12px;color:var(--sub);font-weight:900;}
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.32);
+        }
 
-    .badge{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:4px 10px;border-radius:999px;
-      font-size:12px;font-weight:900;
-      border:1px solid rgba(148,163,184,0.16);
-      background: rgba(148,163,184,0.10);
-      color:var(--sub);
-      user-select:none;
-    }
-    .badge.live{background: rgba(59,130,246,0.16);border-color: rgba(59,130,246,0.22);color:#dbeafe;}
-    .badge.real{background: rgba(34,197,94,0.14);border-color: rgba(34,197,94,0.22);color:#dcfce7;}
-    .badge.closed{background: rgba(148,163,184,0.10);border-color: rgba(148,163,184,0.16);color:#e2e8f0;}
-    .badge.unknown{background: rgba(244,63,94,0.10);border-color: rgba(244,63,94,0.18);color:#fecdd3;}
+        button:active {
+            transform: translateY(0) scale(0.99);
+        }
 
-    .small{font-size:12px;color:var(--sub);}
-    .mono{font-variant-numeric: tabular-nums;}
+        .btn-primary {
+            background: linear-gradient(45deg, #10b981, var(--accent));
+            border: none;
+        }
 
-    .chips{display:flex;flex-wrap:wrap;gap:8px;}
-    .chip2{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 10px;border-radius:999px;
-      font-size:12px;color:var(--sub);
-      background: rgba(15,23,42,0.35);
-      border:1px solid rgba(148,163,184,0.12);
-      user-select:none;
-    }
-    .chip2 b{color:var(--text);}
+        .btn-accent {
+            background: linear-gradient(45deg, var(--accent), var(--accent2));
+            border: none;
+        }
 
-    .fund-profit{
-      font-weight:1000;font-size:14px;text-align:right;
-      font-variant-numeric: tabular-nums;
-    }
-    .blink{animation: blink 1s infinite;}
-    @keyframes blink{0%,50%,100%{opacity:1} 25%,75%{opacity:.25}}
+        .btn-danger {
+            background: linear-gradient(45deg, #ef4444, #f43f5e);
+            border: none;
+        }
 
-    .arrow{display:inline-block;transition: transform .28s ease;font-weight:900;color:var(--sub);user-select:none;}
-    .arrow.open{transform: rotate(90deg);}
+        .btn-ghost {
+            background: rgba(51, 65, 85, 0.35);
+        }
 
-    .today-wrap{display:flex;flex-direction:column;gap:6px;}
-    .today-row{display:flex;align-items:center;gap:8px;line-height:1.25;flex-wrap:wrap;}
-    .pill{
-      display:inline-flex;align-items:center;
-      padding:2px 9px;border-radius:999px;
-      font-size:11px;font-weight:1000;
-      background: rgba(148,163,184,0.12);
-      color:var(--sub);
-      border:1px solid rgba(148,163,184,0.16);
-      user-select:none;
-    }
-    .pill.estimate{background: rgba(59,130,246,0.18);border-color: rgba(59,130,246,0.22);color:#dbeafe;}
-    .pill.real{background: rgba(34,197,94,0.14);border-color: rgba(34,197,94,0.22);color:#dcfce7;}
-    .pill.closed{background: rgba(148,163,184,0.10);border-color: rgba(148,163,184,0.16);color:#e2e8f0;}
+        .wrap {
+            width: 100%;
+            max-width: 980px;
+            margin: 0 auto;
+        }
 
-    .kpi{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 10px;border-radius:14px;
-      background: rgba(15,23,42,0.35);
-      border:1px solid rgba(148,163,184,0.12);
-    }
-    .kpi .label{color:var(--sub);font-size:12px;font-weight:900;}
-    .kpi .v{font-weight:1000;font-variant-numeric: tabular-nums;}
-    .kpi .v.up{color:var(--up);}
-    .kpi .v.down{color:var(--down);}
-    .kpi .v.neutral{color:var(--sub);}
+        h1 {
+            display: none;
+        }
 
-    .updated-tag{
-      display:inline-flex;align-items:center;gap:4px;
-      font-size:11px;color:#a7f3d0;
-      background: rgba(16,185,129,0.12);
-      border:1px solid rgba(16,185,129,0.18);
-      padding:2px 8px;border-radius:999px;
-      user-select:none;
-    }
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-bottom: 14px;
+        }
 
-    .fund-buttons{
-      display:flex;gap:10px;
-      padding:12px 14px 14px 14px;
-      background: rgba(15,23,42,0.36);
-      border-bottom: 1px solid rgba(148,163,184,0.10);
-    }
-    .fund-buttons button{flex:1;border-radius:14px;}
+        #loginPanel.card {
+            max-width: 480px;
+            margin-top: 14px;
+        }
 
-    .fund-body{
-      max-height:0;opacity:0;transform: translateY(-6px);
-      overflow:hidden;
-      transition: max-height .32s ease, opacity .22s ease, transform .22s ease;
-      background: rgba(15,23,42,0.45);
-      padding: 0 14px;
-    }
-    .fund-body.open{
-      max-height:420px;
-      opacity:1;
-      transform: translateY(0);
-      padding:12px 14px 14px 14px;
-    }
+        input {
+            padding: 11px 12px;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: rgba(51, 65, 85, 0.35);
+            color: white;
+            margin-bottom: 8px;
+            font-size: 14px;
+            outline: none;
+        }
 
-    .period-box{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
-    button.period{
-      padding:7px 10px;font-size:12px;
-      background: rgba(51,65,85,0.35);
-      border-radius:12px;
-      border:1px solid rgba(148,163,184,0.14);
-      box-shadow:none;
-    }
-    button.period.active{
-      background: rgba(59,130,246,0.22);
-      border-color: rgba(59,130,246,0.26);
-    }
+        input:focus {
+            border-color: rgba(59, 130, 246, 0.45);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
+        }
 
-    canvas.chart{
-      margin-top:6px;
-      width:100% !important;
-      height:auto;
-      border-radius:14px;
-      background: rgba(15,23,42,0.30);
-      border:1px solid rgba(148,163,184,0.10);
-    }
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
 
-    .skeleton{
-      position:relative;overflow:hidden;
-      background: rgba(148,163,184,0.10);
-      border:1px solid rgba(148,163,184,0.12);
-      border-radius:14px;
-    }
-    .skeleton::after{
-      content:"";
-      position:absolute;top:0;left:-60%;
-      width:60%;height:100%;
-      background: linear-gradient(90deg, transparent, rgba(241,245,249,0.10), transparent);
-      animation: shimmer 1.2s infinite;
-    }
-    @keyframes shimmer{100%{left:120%;}}
+        .form-row input {
+            flex: 1;
+            margin-bottom: 0;
+        }
 
-    .loading{text-align:center;padding:12px;color:var(--sub);}
+        .form-row button {
+            flex: 1;
+        }
 
-    /* Global Loading */
-    #globalLoading{
-      position:fixed;top:0;left:0;right:0;bottom:0;
-      background: rgba(0,0,0,0.55);
-      color:#fff;font-size:16px;
-      display:none;justify-content:center;align-items:center;
-      z-index:9999;flex-direction:column;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-    #globalLoading .spinner{
-      border:4px solid rgba(255,255,255,0.20);
-      border-top:4px solid var(--accent);
-      border-radius:50%;
-      width:38px;height:38px;
-      animation: spin 1s linear infinite;
-      margin-bottom:10px;
-    }
-    @keyframes spin{0%{transform:rotate(0)} 100%{transform:rotate(360deg)}}
+        .overview {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-    /* 排序提示 */
-    .edit-hint{
-      font-size:12px;color:var(--sub);
-      display:none;align-items:center;gap:8px;margin-top:6px;
-    }
-    .edit-hint.show{display:flex;}
+        .grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
 
-    /* 拖拽手柄 */
-    .drag-handle{
-      display:none;
-      user-select:none;
-      padding:5px 10px;
-      border-radius:12px;
-      background: rgba(51,65,85,0.35);
-      border:1px solid rgba(148,163,184,0.12);
-      color:var(--sub);
-      font-weight:1000;
-      cursor: grab;
-      touch-action: none;
-      -webkit-user-select:none;
-      user-select:none;
-    }
-    .edit-mode .drag-handle{display:inline-flex;}
-    .edit-mode .fund-card{animation: wiggle .9s infinite;}
-    @keyframes wiggle{
-      0%,100%{transform: rotate(0deg)}
-      25%{transform: rotate(.22deg)}
-      75%{transform: rotate(-.22deg)}
-    }
+        .stat-card {
+            flex: 1 1 170px;
+            min-width: 160px;
+            padding: 12px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+            text-align: center;
+        }
 
-    .drag-ghost{
-      position:fixed;
-      z-index:999;
-      pointer-events:none;
-      transform: translate3d(0,0,0) scale(1.01);
-      box-shadow:0 18px 38px rgba(0,0,0,0.45);
-      border:1px solid rgba(99,102,241,0.28);
-      border-radius: var(--radius);
-      overflow:hidden;
-      opacity:.96;
-      left:0;top:0;
-    }
+        .stat-title {
+            font-size: 12px;
+            color: var(--sub);
+        }
 
-    /* ✅ 占位块：不制造巨大空白 */
-    .placeholder{
-      margin: 0 !important;
-      border-radius: var(--radius2);
-      border:2px dashed rgba(59,130,246,0.35);
-      background: rgba(59,130,246,0.08);
-    }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 900;
+            margin-top: 6px;
+            font-variant-numeric: tabular-nums;
+        }
 
-    /* Toast */
-    button[disabled]{opacity:.65;cursor:not-allowed;transform:none !important;}
-    .spin{display:inline-block;animation: spin 1s linear infinite;}
+        .up {
+            color: var(--up);
+        }
 
-    #toast{
-      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
-      z-index:10000;display:none;
-      padding:10px 12px;border-radius:14px;
-      background: rgba(15,23,42,0.85);
-      border:1px solid rgba(148,163,184,0.18);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow:0 12px 28px rgba(0,0,0,0.35);
-      color:var(--text);
-      font-size:13px;
-      max-width: calc(100vw - 24px);
-      white-space:nowrap;
-    }
-    #toast.success{border-color: rgba(34,197,94,0.35);}
-    #toast.error{border-color: rgba(244,63,94,0.40);}
-    #toast .sub{color:var(--sub);font-size:12px;margin-left:6px;}
+        .down {
+            color: var(--down);
+        }
 
-    /* ✅ 拖拽中锁滚动（防止 pointercancel / 拖拽中断） */
-    body.dragging{
-      position: fixed;
-      width: 100%;
-      overflow: hidden;
-      left: 0; right: 0;
-    }
-    body.dragging, body.dragging *{
-      -webkit-user-select:none !important;
-      user-select:none !important;
-      -webkit-touch-callout:none !important;
-    }
+        .drag-tip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: var(--sub);
+            background: rgba(148, 163, 184, 0.10);
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            user-select: none;
+            white-space: nowrap;
+        }
 
-    /* mobile */
-    @media (max-width:560px){
-      .appbar{flex-direction:column;align-items:stretch;gap:10px;}
-      .appbar-top{
-        display:flex;align-items:center;justify-content:space-between;gap:10px;
-        min-width:0;
-      }
-      .appbar-center{max-width:none;}
-      .appbar-actions{min-width:0;gap:8px;flex-wrap:nowrap;}
-      .chip{display:none;}
-      .brand{min-width:0;}
-      .fund-title{max-width:220px;}
-      button{padding:9px 10px;}
-    }
-    @media (max-width:360px){
-      #btnRefreshText,#btnThemeText{display:none;}
-      button{padding:9px 10px;}
-    }
+        /* ===== list card ===== */
+        .list-card {
+            padding: 0;
+            overflow: hidden;
+        }
 
-    .logged-out .appbar{display:none !important;}
-  </style>
+        .list-head {
+            padding: 14px 14px 10px 14px;
+            background: rgba(30, 41, 59, 0.40);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+        }
+
+        .list-head-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .list-title {
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .list-sub {
+            font-size: 12px;
+            color: var(--sub);
+        }
+
+        .list-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            min-width: 0;
+        }
+
+        .list-controls-left {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .list-controls-right {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        /* ✅ seg scroll：按钮不被压扁、不换行 */
+        .seg-scroll {
+            display: flex;
+            gap: 8px;
+            padding: 6px;
+            border-radius: 16px;
+            background: rgba(51, 65, 85, 0.28);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .seg-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .seg-scroll button {
+            padding: 8px 12px;
+            border-radius: 999px;
+            box-shadow: none;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            background: rgba(15, 23, 42, 0.20);
+            color: var(--sub);
+            font-weight: 900;
+            font-size: 12px;
+            flex: 0 0 auto;
+            width: max-content;
+            min-width: max-content;
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .seg-scroll button.active {
+            background: rgba(59, 130, 246, 0.22);
+            border-color: rgba(59, 130, 246, 0.26);
+            color: #dbeafe;
+        }
+
+        select {
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: rgba(51, 65, 85, 0.35);
+            color: var(--text);
+            outline: none;
+            font-weight: 800;
+            font-size: 12px;
+            max-width: 44vw;
+        }
+
+        .list-body {
+            padding: 14px;
+            background: rgba(15, 23, 42, 0.20);
+        }
+
+        /* ===== Fund card ===== */
+        .fund-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            margin: 0 auto 14px auto;
+            overflow: hidden;
+            transform: translateZ(0);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+            position: relative;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .fund-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
+            border-color: rgba(99, 102, 241, 0.22);
+        }
+
+        .fund-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            cursor: pointer;
+            padding: 14px 14px 12px 14px;
+            background: rgba(30, 41, 59, 0.58);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+            gap: 12px;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        .fund-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .fund-header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .fund-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .fund-title {
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: .2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 520px;
+        }
+
+        .code {
+            font-size: 12px;
+            color: var(--sub);
+            font-weight: 900;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: rgba(148, 163, 184, 0.10);
+            color: var(--sub);
+            user-select: none;
+        }
+
+        .badge.live {
+            background: rgba(59, 130, 246, 0.16);
+            border-color: rgba(59, 130, 246, 0.22);
+            color: #dbeafe;
+        }
+
+        .badge.real {
+            background: rgba(34, 197, 94, 0.14);
+            border-color: rgba(34, 197, 94, 0.22);
+            color: #dcfce7;
+        }
+
+        .badge.closed {
+            background: rgba(148, 163, 184, 0.10);
+            border-color: rgba(148, 163, 184, 0.16);
+            color: #e2e8f0;
+        }
+
+        .badge.unknown {
+            background: rgba(244, 63, 94, 0.10);
+            border-color: rgba(244, 63, 94, 0.18);
+            color: #fecdd3;
+        }
+
+        .small {
+            font-size: 12px;
+            color: var(--sub);
+        }
+
+        .mono {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip2 {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: var(--sub);
+            background: rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            user-select: none;
+        }
+
+        .chip2 b {
+            color: var(--text);
+        }
+
+        .fund-profit {
+            font-weight: 1000;
+            font-size: 14px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% {
+                opacity: 1
+            }
+            25%, 75% {
+                opacity: .25
+            }
+        }
+
+        .arrow {
+            display: inline-block;
+            transition: transform .28s ease;
+            font-weight: 900;
+            color: var(--sub);
+            user-select: none;
+        }
+
+        .arrow.open {
+            transform: rotate(90deg);
+        }
+
+        .today-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .today-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1.25;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 1000;
+            background: rgba(148, 163, 184, 0.12);
+            color: var(--sub);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            user-select: none;
+        }
+
+        .pill.estimate {
+            background: rgba(59, 130, 246, 0.18);
+            border-color: rgba(59, 130, 246, 0.22);
+            color: #dbeafe;
+        }
+
+        .pill.real {
+            background: rgba(34, 197, 94, 0.14);
+            border-color: rgba(34, 197, 94, 0.22);
+            color: #dcfce7;
+        }
+
+        .pill.closed {
+            background: rgba(148, 163, 184, 0.10);
+            border-color: rgba(148, 163, 184, 0.16);
+            color: #e2e8f0;
+        }
+
+        .kpi {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+        }
+
+        .kpi .label {
+            color: var(--sub);
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .kpi .v {
+            font-weight: 1000;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .kpi .v.up {
+            color: var(--up);
+        }
+
+        .kpi .v.down {
+            color: var(--down);
+        }
+
+        .kpi .v.neutral {
+            color: var(--sub);
+        }
+
+        .updated-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #a7f3d0;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.18);
+            padding: 2px 8px;
+            border-radius: 999px;
+            user-select: none;
+        }
+
+        .fund-buttons {
+            display: flex;
+            gap: 10px;
+            padding: 12px 14px 14px 14px;
+            background: rgba(15, 23, 42, 0.36);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+        }
+
+        .fund-buttons button {
+            flex: 1;
+            border-radius: 14px;
+        }
+
+        .fund-body {
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-6px);
+            overflow: hidden;
+            transition: max-height .32s ease, opacity .22s ease, transform .22s ease;
+            background: rgba(15, 23, 42, 0.45);
+            padding: 0 14px;
+        }
+
+        .fund-body.open {
+            max-height: 420px;
+            opacity: 1;
+            transform: translateY(0);
+            padding: 12px 14px 14px 14px;
+        }
+
+        .period-box {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        button.period {
+            padding: 7px 10px;
+            font-size: 12px;
+            background: rgba(51, 65, 85, 0.35);
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            box-shadow: none;
+        }
+
+        button.period.active {
+            background: rgba(59, 130, 246, 0.22);
+            border-color: rgba(59, 130, 246, 0.26);
+        }
+
+        canvas.chart {
+            margin-top: 6px;
+            width: 100% !important;
+            height: auto;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.30);
+            border: 1px solid rgba(148, 163, 184, 0.10);
+        }
+
+        .skeleton {
+            position: relative;
+            overflow: hidden;
+            background: rgba(148, 163, 184, 0.10);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            border-radius: 14px;
+        }
+
+        .skeleton::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -60%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(241, 245, 249, 0.10), transparent);
+            animation: shimmer 1.2s infinite;
+        }
+
+        @keyframes shimmer {
+            100% {
+                left: 120%;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 12px;
+            color: var(--sub);
+        }
+
+        /* Global Loading */
+        #globalLoading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.55);
+            color: #fff;
+            font-size: 16px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        #globalLoading .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.20);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0)
+            }
+            100% {
+                transform: rotate(360deg)
+            }
+        }
+
+        /* 排序提示 */
+        .edit-hint {
+            font-size: 12px;
+            color: var(--sub);
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .edit-hint.show {
+            display: flex;
+        }
+
+        /* 拖拽手柄 */
+        .drag-handle {
+            display: none;
+            user-select: none;
+            padding: 5px 10px;
+            border-radius: 12px;
+            background: rgba(51, 65, 85, 0.35);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            color: var(--sub);
+            font-weight: 1000;
+            cursor: grab;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .edit-mode .drag-handle {
+            display: inline-flex;
+        }
+
+        .edit-mode .fund-card {
+            animation: wiggle .9s infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% {
+                transform: rotate(0deg)
+            }
+            25% {
+                transform: rotate(.22deg)
+            }
+            75% {
+                transform: rotate(-.22deg)
+            }
+        }
+
+        .drag-ghost {
+            position: fixed;
+            z-index: 999;
+            pointer-events: none;
+            transform: translate3d(0, 0, 0) scale(1.01);
+            box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(99, 102, 241, 0.28);
+            border-radius: var(--radius);
+            overflow: hidden;
+            opacity: .96;
+            left: 0;
+            top: 0;
+        }
+
+        /* ✅ 占位块：不制造巨大空白 */
+        .placeholder {
+            margin: 0 !important;
+            border-radius: var(--radius2);
+            border: 2px dashed rgba(59, 130, 246, 0.35);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        /* Toast */
+        button[disabled] {
+            opacity: .65;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .spin {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        #toast {
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            transform: translateX(-50%);
+            z-index: 10000;
+            display: none;
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+            color: var(--text);
+            font-size: 13px;
+            max-width: calc(100vw - 24px);
+            white-space: nowrap;
+        }
+
+        #toast.success {
+            border-color: rgba(34, 197, 94, 0.35);
+        }
+
+        #toast.error {
+            border-color: rgba(244, 63, 94, 0.40);
+        }
+
+        #toast .sub {
+            color: var(--sub);
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+        /* ✅ 拖拽中锁滚动（防止 pointercancel / 拖拽中断） */
+        body.dragging {
+            position: fixed;
+            width: 100%;
+            overflow: hidden;
+            left: 0;
+            right: 0;
+        }
+
+        body.dragging, body.dragging * {
+            -webkit-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none !important;
+        }
+
+        /* mobile */
+        @media (max-width: 560px) {
+            .appbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .appbar-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                min-width: 0;
+            }
+
+            .appbar-center {
+                max-width: none;
+            }
+
+            .appbar-actions {
+                min-width: 0;
+                gap: 8px;
+                flex-wrap: nowrap;
+            }
+
+            .chip {
+                display: none;
+            }
+
+            .brand {
+                min-width: 0;
+            }
+
+            .fund-title {
+                max-width: 220px;
+            }
+
+            button {
+                padding: 9px 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            #btnRefreshText, #btnThemeText {
+                display: none;
+            }
+
+            button {
+                padding: 9px 10px;
+            }
+        }
+
+        .logged-out .appbar {
+            display: none !important;
+        }
+    </style>
 </head>
 
 <body class="logged-out">
-  <!-- AppBar -->
-  <div class="appbar" id="appbar">
+<!-- AppBar -->
+<div class="appbar" id="appbar">
     <div class="appbar-top" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-      <div class="brand">
-        <div class="logo">DU</div>
-        <div class="title">
-          <b>爱理财的DU</b>
-          <span id="subTitle">Portfolio Dashboard</span>
+        <div class="brand">
+            <div class="logo">DU</div>
+            <div class="title">
+                <b>爱理财的DU</b>
+                <span id="subTitle">Portfolio Dashboard</span>
+            </div>
         </div>
-      </div>
 
-      <div class="appbar-actions">
-        <span class="chip">👤 <b id="userNameTop">未登录</b></span>
-        <button class="btn-ghost" id="btnRefresh" title="立即刷新">⟳ <span id="btnRefreshText">刷新</span></button>
-        <button class="btn-ghost" id="btnTheme" title="切换主题">🎨 <span id="btnThemeText">主题</span></button>
-        <button class="btn-danger" id="btnLogout" style="display:none;">退出</button>
-      </div>
+        <div class="appbar-actions">
+            <span class="chip">👤 <b id="userNameTop">未登录</b></span>
+            <button class="btn-ghost" id="btnRefresh" title="立即刷新">⟳ <span id="btnRefreshText">刷新</span></button>
+            <button class="btn-ghost" id="btnTheme" title="切换主题">🎨 <span id="btnThemeText">主题</span></button>
+            <button class="btn-danger" id="btnLogout" style="display:none;">退出</button>
+        </div>
     </div>
 
     <div class="appbar-center">
-      <div class="search">
-        <span class="icon">🔎</span>
-        <input id="searchInput" placeholder="搜索基金名称 / 代码…"/>
-        <span class="icon" id="searchClear" style="display:none; cursor:pointer;">✕</span>
-      </div>
+        <div class="search">
+            <span class="icon">🔎</span>
+            <input id="searchInput" placeholder="搜索基金名称 / 代码…"/>
+            <span class="icon" id="searchClear" style="display:none; cursor:pointer;">✕</span>
+        </div>
     </div>
-  </div>
+</div>
 
-  <div class="wrap">
+<div class="wrap">
     <!-- 登录 -->
     <div id="loginPanel" class="card">
-      <h2 style="text-align:center; margin-bottom:10px;">登录 / 注册</h2>
-      <input id="username" placeholder="用户名"/>
-      <input id="password" type="password" placeholder="密码"/>
-      <div class="form-row">
-        <button class="btn-accent" onclick="loginUser()">登录</button>
-        <button class="btn-ghost" onclick="registerUser()">注册</button>
-      </div>
+        <h2 style="text-align:center; margin-bottom:10px;">登录 / 注册</h2>
+        <input id="username" placeholder="用户名"/>
+        <input id="password" type="password" placeholder="密码"/>
+        <div class="form-row">
+            <button class="btn-accent" onclick="loginUser()">登录</button>
+            <button class="btn-ghost" onclick="registerUser()">注册</button>
+        </div>
     </div>
 
     <!-- App -->
     <div id="app" style="display:none;">
-      <!-- 概览 -->
-      <div class="card overview">
-        <div style="display:flex; justify-content: space-between; align-items:flex-start; gap:10px; flex-wrap: wrap;">
-          <div style="display:flex; align-items:center; gap:10px; flex-wrap: wrap;">
-            <b style="font-size:14px;">📌 组合概览</b>
-            <span class="small" id="lastUpdatedText">—</span>
-          </div>
-          <div style="display:flex; gap:10px; align-items:center;">
-            <span class="drag-tip" id="dragTip">💡 提示：长按卡片（或拖拽≡手柄）可排序</span>
-          </div>
-        </div>
-
-        <div class="edit-hint" id="editHint">已进入排序：拖动卡片调整顺序；松手保存。拖到屏幕边缘会自动滚动。点击空白处可退出</div>
-
-        <div class="grid" style="margin-top:10px;">
-          <div class="stat-card">
-            <div class="stat-title">总资产</div>
-            <div class="stat-value" id="totalAsset">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">总盈亏</div>
-            <div class="stat-value" id="totalProfit">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">收益率</div>
-            <div class="stat-value" id="totalPercent">0%</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">今日总收益</div>
-            <div class="stat-value" id="todayProfit">0</div>
-          </div>
-        </div>
-
-        <div id="todayExtra" style="display:none; margin-top:10px;">
-          <div class="today-row">
-            <span class="pill estimate">预估</span>
-            <span class="kpi"><span class="label">今日总收益</span><span class="v neutral mono" id="todayEstTotal">—</span></span>
-          </div>
-          <div class="today-row" style="margin-top:6px;">
-            <span class="pill real">实际</span>
-            <span class="kpi"><span class="label">今日总收益</span><span class="v neutral mono" id="todayRealTotal">—</span></span>
-            <span class="updated-tag" id="todayRealUpdated" style="display:none;">✅ 已更新</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 添加持仓 -->
-      <div class="card">
-        <div style="display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; gap:10px;">
-          <h3>添加持仓</h3>
-          <span class="small">支持代码 / 买入价 / 份额</span>
-        </div>
-        <div class="form-row">
-          <input id="code" placeholder="基金代码"/>
-          <input id="price" placeholder="买入价格"/>
-          <input id="amount" placeholder="份额"/>
-          <button class="btn-primary" onclick="addFund()">➕ 添加</button>
-        </div>
-      </div>
-
-      <!-- 列表 -->
-      <div class="card list-card">
-        <div class="list-head">
-          <div class="list-head-top">
-            <div class="list-title">持仓列表</div>
-            <div class="list-sub" id="resultCount">—</div>
-          </div>
-
-          <div class="list-controls">
-            <div class="list-controls-left">
-              <div class="seg-scroll" id="filterSeg">
-                <button class="active" data-filter="all">全部</button>
-                <button data-filter="up">盈利</button>
-                <button data-filter="down">亏损</button>
-                <button data-filter="closed">未开盘</button>
-                <button data-filter="updated">已更新</button>
-              </div>
+        <!-- 概览 -->
+        <div class="card overview">
+            <div style="display:flex; justify-content: space-between; align-items:flex-start; gap:10px; flex-wrap: wrap;">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap: wrap;">
+                    <b style="font-size:14px;">📌 组合概览</b>
+                    <span class="small" id="lastUpdatedText">—</span>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <span class="drag-tip" id="dragTip">💡 提示：长按卡片（或拖拽≡手柄）可排序</span>
+                </div>
             </div>
-            <div class="list-controls-right">
-              <select id="sortSelect" title="排序（视图层，不影响自定义顺序）">
-                <option value="custom">自定义顺序</option>
-                <option value="holding_desc">按持有金额↓</option>
-                <option value="profit_desc">按总盈亏↓</option>
-                <option value="percent_desc">按收益率↓</option>
-                <option value="today_est_desc">按今日预估收益↓</option>
-                <option value="today_real_desc">按今日实际收益↓</option>
-              </select>
+
+            <div class="edit-hint" id="editHint">
+                已进入排序：拖动卡片调整顺序；松手保存。拖到屏幕边缘会自动滚动。点击空白处可退出
             </div>
-          </div>
+
+            <div class="grid" style="margin-top:10px;">
+                <div class="stat-card">
+                    <div class="stat-title">总资产</div>
+                    <div class="stat-value" id="totalAsset">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">总盈亏</div>
+                    <div class="stat-value" id="totalProfit">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">收益率</div>
+                    <div class="stat-value" id="totalPercent">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">今日总收益</div>
+                    <div class="stat-value" id="todayProfit">0</div>
+                </div>
+            </div>
+
+            <div id="todayExtra" style="display:none; margin-top:10px;">
+                <div class="today-row">
+                    <span class="pill estimate">预估</span>
+                    <span class="kpi"><span class="label">今日总收益</span><span class="v neutral mono"
+                                                                                 id="todayEstTotal">—</span></span>
+                </div>
+                <div class="today-row" style="margin-top:6px;">
+                    <span class="pill real">实际</span>
+                    <span class="kpi"><span class="label">今日总收益</span><span class="v neutral mono"
+                                                                                 id="todayRealTotal">—</span></span>
+                    <span class="updated-tag" id="todayRealUpdated" style="display:none;">✅ 已更新</span>
+                </div>
+            </div>
         </div>
 
-        <div class="list-body">
-          <div id="list"></div>
+        <!-- 添加持仓 -->
+        <div class="card">
+            <div style="display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; gap:10px;">
+                <h3>添加持仓</h3>
+                <span class="small">支持代码 / 买入价 / 份额</span>
+            </div>
+            <div class="form-row">
+                <input id="code" placeholder="基金代码"/>
+                <input id="price" placeholder="买入价格"/>
+                <input id="amount" placeholder="份额"/>
+                <button class="btn-primary" onclick="addFund()">➕ 添加</button>
+            </div>
         </div>
-      </div>
 
-      <div class="card">
-        <h3 style="margin-bottom:10px;">资产占比</h3>
-        <canvas id="pieChart" height="200"></canvas>
-      </div>
+        <!-- 列表 -->
+        <div class="card list-card">
+            <div class="list-head">
+                <div class="list-head-top">
+                    <div class="list-title">持仓列表</div>
+                    <div class="list-sub" id="resultCount">—</div>
+                </div>
+
+                <div class="list-controls">
+                    <div class="list-controls-left">
+                        <div class="seg-scroll" id="filterSeg">
+                            <button class="active" data-filter="all">全部</button>
+                            <button data-filter="up">盈利</button>
+                            <button data-filter="down">亏损</button>
+                            <button data-filter="closed">未开盘</button>
+                            <button data-filter="updated">已更新</button>
+                        </div>
+                    </div>
+                    <div class="list-controls-right">
+                        <select id="sortSelect" title="排序（视图层，不影响自定义顺序）">
+                            <option value="custom">自定义顺序</option>
+                            <option value="holding_desc">按持有金额↓</option>
+                            <option value="profit_desc">按总盈亏↓</option>
+                            <option value="percent_desc">按收益率↓</option>
+                            <option value="today_est_desc">按今日预估收益↓</option>
+                            <option value="today_real_desc">按今日实际收益↓</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="list-body">
+                <div id="list"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom:10px;">资产占比</h3>
+            <canvas id="pieChart" height="200"></canvas>
+        </div>
     </div>
-  </div>
+</div>
 
-  <!-- Loading -->
-  <div id="globalLoading">
+<!-- Loading -->
+<div id="globalLoading">
     <div class="spinner"></div>
     <div>正在加载，请稍候...</div>
-  </div>
+</div>
 
-  <!-- Toast -->
-  <div id="toast"></div>
+<!-- Toast -->
+<div id="toast"></div>
 
-  <script>
+<script>
     let chartCache = {};
     let pieChart = null;
     let fundMap = new Map();
@@ -779,110 +1253,131 @@
     // ✅ 防重复：渲染版本号（每次 renderList++，旧的 chunk 自动停止）
     let renderVersion = 0;
 
-    function orderKey(){ return "fund_order_" + (currentUserName || "guest"); }
-    function themeKey(){ return "du_theme"; }
-
-    function showLoading(msg="加载中..."){
-      const l = document.getElementById("globalLoading");
-      l.style.display = "flex";
-      l.querySelector("div:last-child").innerText = msg;
-    }
-    function hideLoading(){ document.getElementById("globalLoading").style.display = "none"; }
-
-    async function fetchWithLoading(url, options={}, msg="加载中..."){
-      try{
-        showLoading(msg);
-        const res = await fetch(url, options);
-        hideLoading();
-        return res;
-      }catch(e){
-        hideLoading();
-        alert("请求失败：" + e);
-        throw e;
-      }
-    }
-    async function fetchSilent(url, options={}){ return fetch(url, options); }
-
-    function fmtPercent(v){
-      if (v === null || v === undefined) return "—";
-      const n = parseFloat(v);
-      if (isNaN(n)) return "—";
-      return (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
-    }
-    function fmtMoney(v){
-      if (v === null || v === undefined) return "—";
-      const n = parseFloat(v);
-      if (isNaN(n)) return "—";
-      return (n >= 0 ? "+" : "") + n.toFixed(2);
-    }
-    function signClass(v){
-      const n = parseFloat(v);
-      if (isNaN(n)) return "neutral";
-      if (n > 0) return "up";
-      if (n < 0) return "down";
-      return "neutral";
-    }
-    function arrowIcon(v){
-      const n = parseFloat(v);
-      if (isNaN(n)) return "•";
-      if (n > 0) return "↑";
-      if (n < 0) return "↓";
-      return "→";
-    }
-    function isClosed(f){ return f.market_status === "closed"; }
-    function isUpdated(f){
-      return (f.today_real_percent !== null && f.today_real_percent !== undefined) ||
-             (f.today_real_profit !== null && f.today_real_profit !== undefined) ||
-             (f.market_status === "real");
+    function orderKey() {
+        return "fund_order_" + (currentUserName || "guest");
     }
 
-    function applyTheme(theme){
-      document.documentElement.setAttribute("data-theme", theme);
-      localStorage.setItem(themeKey(), theme);
-    }
-    function toggleTheme(){
-      const cur = localStorage.getItem(themeKey()) || "default";
-      applyTheme(cur === "default" ? "gold" : "default");
+    function themeKey() {
+        return "du_theme";
     }
 
-    function badgeFor(f){
-      if (f.market_status === "open_estimate") return `<span class="badge live">🕘 盘中</span>`;
-      if (f.market_status === "real") return `<span class="badge real">✅ 已更新</span>`;
-      if (f.market_status === "closed") return `<span class="badge closed">💤 未开盘</span>`;
-      return `<span class="badge unknown">⚠️ 异常</span>`;
+    function showLoading(msg = "加载中...") {
+        const l = document.getElementById("globalLoading");
+        l.style.display = "flex";
+        l.querySelector("div:last-child").innerText = msg;
     }
 
-    function kpiHtml(label, valueText, valueRaw){
-      const cls = signClass(valueRaw);
-      const icon = arrowIcon(valueRaw);
-      return `
+    function hideLoading() {
+        document.getElementById("globalLoading").style.display = "none";
+    }
+
+    async function fetchWithLoading(url, options = {}, msg = "加载中...") {
+        try {
+            showLoading(msg);
+            const res = await fetch(url, options);
+            hideLoading();
+            return res;
+        } catch (e) {
+            hideLoading();
+            alert("请求失败：" + e);
+            throw e;
+        }
+    }
+
+    async function fetchSilent(url, options = {}) {
+        return fetch(url, options);
+    }
+
+    function fmtPercent(v) {
+        if (v === null || v === undefined) return "—";
+        const n = parseFloat(v);
+        if (isNaN(n)) return "—";
+        return (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
+    }
+
+    function fmtMoney(v) {
+        if (v === null || v === undefined) return "—";
+        const n = parseFloat(v);
+        if (isNaN(n)) return "—";
+        return (n >= 0 ? "+" : "") + n.toFixed(2);
+    }
+
+    function signClass(v) {
+        const n = parseFloat(v);
+        if (isNaN(n)) return "neutral";
+        if (n > 0) return "up";
+        if (n < 0) return "down";
+        return "neutral";
+    }
+
+    function arrowIcon(v) {
+        const n = parseFloat(v);
+        if (isNaN(n)) return "•";
+        if (n > 0) return "↑";
+        if (n < 0) return "↓";
+        return "→";
+    }
+
+    function isClosed(f) {
+        return f.market_status === "closed";
+    }
+
+    function isUpdated(f) {
+        return (f.today_real_percent !== null && f.today_real_percent !== undefined) ||
+            (f.today_real_profit !== null && f.today_real_profit !== undefined) ||
+            (f.market_status === "real");
+    }
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem(themeKey(), theme);
+    }
+
+    function toggleTheme() {
+        const cur = localStorage.getItem(themeKey()) || "default";
+        applyTheme(cur === "default" ? "gold" : "default");
+    }
+
+    function badgeFor(f) {
+        if (f.market_status === "open_estimate") return `<span class="badge live">🕘 盘中</span>`;
+        if (f.market_status === "real") return `<span class="badge real">✅ 已更新</span>`;
+        if (f.market_status === "closed") return `<span class="badge closed">💤 未开盘</span>`;
+        return `<span class="badge unknown">⚠️ 异常</span>`;
+    }
+
+    function kpiHtml(label, valueText, valueRaw) {
+        const cls = signClass(valueRaw);
+        const icon = arrowIcon(valueRaw);
+        return `
         <span class="kpi">
           <span class="label">${label}</span>
           <span class="v ${cls} mono">${icon} ${valueText}</span>
         </span>`;
     }
-    function estimateRowHtml(f){
-      if (isClosed(f)){
-        return `<div class="today-row">
+
+    function estimateRowHtml(f) {
+        if (isClosed(f)) {
+            return `<div class="today-row">
           <span class="pill closed">未开盘</span>
           <span class="small">预估：未开盘</span>
         </div>`;
-      }
-      return `<div class="today-row">
+        }
+        return `<div class="today-row">
         <span class="pill estimate">预估</span>
         ${kpiHtml("涨跌", fmtPercent(f.today_estimate_percent), f.today_estimate_percent)}
         ${kpiHtml("收益", fmtMoney(f.today_estimate_profit), f.today_estimate_profit)}
       </div>`;
     }
-    function realRowHtml(f){
-      if (isClosed(f)){
-        return `<div class="today-row">
+
+    function realRowHtml(f) {
+        if (isClosed(f)) {
+            return `<div class="today-row">
           <span class="pill closed">未开盘</span>
           <span class="small">实际：未开盘</span>
         </div>`;
-      }
-      const updated = isUpdated(f);
-      return `<div class="today-row">
+        }
+        const updated = isUpdated(f);
+        return `<div class="today-row">
         <span class="pill real">实际</span>
         ${kpiHtml("涨跌", fmtPercent(f.today_real_percent), f.today_real_percent)}
         ${kpiHtml("收益", fmtMoney(f.today_real_profit), f.today_real_profit)}
@@ -890,273 +1385,229 @@
       </div>`;
     }
 
-    function orderGet(){
-      try{
-        const raw = localStorage.getItem(orderKey());
-        const arr = JSON.parse(raw);
-        return Array.isArray(arr) ? arr : null;
-      }catch(e){ return null; }
-    }
-    function orderSave(arr){ localStorage.setItem(orderKey(), JSON.stringify(arr)); }
-
-    function escapeHtml(s){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+    function orderGet() {
+        try {
+            const raw = localStorage.getItem(orderKey());
+            const arr = JSON.parse(raw);
+            return Array.isArray(arr) ? arr : null;
+        } catch (e) {
+            return null;
+        }
     }
 
-    function showToast(text, type="success", subText=""){
-      const t = document.getElementById("toast");
-      if(!t) return;
-      t.className = type;
-      t.innerHTML = `${escapeHtml(text)}${subText ? `<span class="sub">${escapeHtml(subText)}</span>` : ""}`;
-      t.style.display = "block";
-      clearTimeout(t._timer);
-      t._timer = setTimeout(()=>{ t.style.display="none"; }, 1800);
+    function orderSave(arr) {
+        localStorage.setItem(orderKey(), JSON.stringify(arr));
     }
 
-    function setRefreshBtnLoading(on){
-      const btn = document.getElementById("btnRefresh");
-      if(!btn) return;
-      if(on){
-        btn.disabled = true;
-        btn.innerHTML = `<span class="spin">⟳</span> <span id="btnRefreshText">刷新中…</span>`;
-      }else{
-        btn.disabled = false;
-        btn.innerHTML = `⟳ <span id="btnRefreshText">刷新</span>`;
-      }
+    function escapeHtml(s) {
+        return String(s)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
     }
 
-    function setLoggedInUI(isIn){
-      document.body.classList.toggle("logged-out", !isIn);
-      const appbar = document.getElementById("appbar");
-      if(appbar) appbar.style.display = isIn ? "flex" : "none";
-      document.getElementById("btnLogout").style.display = isIn ? "inline-flex" : "none";
-      document.getElementById("userNameTop").innerText = isIn ? currentUserName : "未登录";
+    function showToast(text, type = "success", subText = "") {
+        const t = document.getElementById("toast");
+        if (!t) return;
+        t.className = type;
+        t.innerHTML = `${escapeHtml(text)}${subText ? `<span class="sub">${escapeHtml(subText)}</span>` : ""}`;
+        t.style.display = "block";
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => {
+            t.style.display = "none";
+        }, 1800);
+    }
+
+    function setRefreshBtnLoading(on) {
+        const btn = document.getElementById("btnRefresh");
+        if (!btn) return;
+        if (on) {
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spin">⟳</span> <span id="btnRefreshText">刷新中…</span>`;
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = `⟳ <span id="btnRefreshText">刷新</span>`;
+        }
+    }
+
+    function setLoggedInUI(isIn) {
+        document.body.classList.toggle("logged-out", !isIn);
+        const appbar = document.getElementById("appbar");
+        if (appbar) appbar.style.display = isIn ? "flex" : "none";
+        document.getElementById("btnLogout").style.display = isIn ? "inline-flex" : "none";
+        document.getElementById("userNameTop").innerText = isIn ? currentUserName : "未登录";
     }
 
     // ✅ debounce：避免搜索输入高频触发 render
-    function debounce(fn, wait=120){
-      let t = null;
-      return (...args)=>{
-        clearTimeout(t);
-        t = setTimeout(()=>fn(...args), wait);
-      };
+    function debounce(fn, wait = 120) {
+        let t = null;
+        return (...args) => {
+            clearTimeout(t);
+            t = setTimeout(() => fn(...args), wait);
+        };
     }
 
-    window.onload = async ()=>{
-      applyTheme(localStorage.getItem(themeKey()) || "default");
-      document.getElementById("btnTheme").onclick = toggleTheme;
-      document.getElementById("btnLogout").onclick = logoutUser;
+    window.onload = async () => {
+        applyTheme(localStorage.getItem(themeKey()) || "default");
+        document.getElementById("btnTheme").onclick = toggleTheme;
+        document.getElementById("btnLogout").onclick = logoutUser;
 
-      document.getElementById("btnRefresh").onclick = async ()=>{ await refreshRealtime(true, true); };
+        document.getElementById("btnRefresh").onclick = async () => {
+            await refreshRealtime(true, true);
+        };
 
-      // 搜索（debounce）
-      const s = document.getElementById("searchInput");
-      const sc = document.getElementById("searchClear");
+        // 搜索（debounce）
+        const s = document.getElementById("searchInput");
+        const sc = document.getElementById("searchClear");
 
-      const doSearchRender = debounce(()=>{
-        sc.style.display = s.value.trim() ? "inline" : "none";
-        renderListFromCache();
-      }, 120);
+        const doSearchRender = debounce(() => {
+            sc.style.display = s.value.trim() ? "inline" : "none";
+            renderListFromCache();
+        }, 120);
 
-      s.addEventListener("input", doSearchRender);
-      sc.addEventListener("click", ()=>{
-        s.value = "";
-        sc.style.display = "none";
-        renderListFromCache();
-      });
+        s.addEventListener("input", doSearchRender);
+        sc.addEventListener("click", () => {
+            s.value = "";
+            sc.style.display = "none";
+            renderListFromCache();
+        });
 
-      // 筛选
-      document.getElementById("filterSeg").addEventListener("click",(e)=>{
-        const btn = e.target.closest("button");
-        if(!btn) return;
-        [...document.querySelectorAll("#filterSeg button")].forEach(b=>b.classList.remove("active"));
-        btn.classList.add("active");
-        activeFilter = btn.dataset.filter;
-        renderListFromCache();
-      });
+        // 筛选
+        document.getElementById("filterSeg").addEventListener("click", (e) => {
+            const btn = e.target.closest("button");
+            if (!btn) return;
+            [...document.querySelectorAll("#filterSeg button")].forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            activeFilter = btn.dataset.filter;
+            renderListFromCache();
+        });
 
-      // 排序
-      document.getElementById("sortSelect").addEventListener("change",(e)=>{
-        activeSort = e.target.value;
-        if(activeSort !== "custom" && editMode) setEditMode(false);
-        renderListFromCache();
-      });
+        // 排序
+        document.getElementById("sortSelect").addEventListener("change", (e) => {
+            activeSort = e.target.value;
+            if (activeSort !== "custom" && editMode) setEditMode(false);
+            renderListFromCache();
+        });
 
-      // 点击空白处退出排序模式
-      document.addEventListener("pointerdown",(e)=>{
-        if(!editMode) return;
-        const inCard = e.target.closest(".fund-card");
-        const inKeep = e.target.closest("#sortSelect") || e.target.closest("#filterSeg");
-        if(!inCard && !inKeep){
-          setEditMode(false);
-        }
-      }, {capture:true});
+        // 点击空白处退出排序模式
+        document.addEventListener("pointerdown", (e) => {
+            if (!editMode) return;
+            const inCard = e.target.closest(".fund-card");
+            const inKeep = e.target.closest("#sortSelect") || e.target.closest("#filterSeg");
+            if (!inCard && !inKeep) {
+                setEditMode(false);
+            }
+        }, {capture: true});
 
-      // 检查登录
-      const d = await (await fetchWithLoading("/me", {}, "正在检查登录状态")).json();
-      if(d.logged_in) showApp(d.username);
-      else setLoggedInUI(false);
+        // 检查登录
+        const d = await (await fetchWithLoading("/me", {}, "正在检查登录状态")).json();
+        if (d.logged_in) showApp(d.username);
+        else setLoggedInUI(false);
     };
 
-    function showApp(username){
-      currentUserName = username;
-      setLoggedInUI(true);
-      document.getElementById("loginPanel").style.display = "none";
-      document.getElementById("app").style.display = "block";
-      loadData();
+    function showApp(username) {
+        currentUserName = username;
+        setLoggedInUI(true);
+        document.getElementById("loginPanel").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        loadData();
     }
 
-    async function registerUser(){
-      const d = await (await fetchWithLoading("/register",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({username: username.value, password: password.value})
-      }, "注册中...")).json();
-      if(d.error) alert(d.error);
-      else alert("注册成功");
+    async function registerUser() {
+        const d = await (await fetchWithLoading("/register", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({username: username.value, password: password.value})
+        }, "注册中...")).json();
+        if (d.error) alert(d.error);
+        else alert("注册成功");
     }
 
-    async function loginUser(){
-      const d = await (await fetchWithLoading("/login",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({username: username.value, password: password.value})
-      }, "登录中...")).json();
-      if(d.error) alert(d.error);
-      else showApp(d.username);
+    async function loginUser() {
+        const d = await (await fetchWithLoading("/login", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({username: username.value, password: password.value})
+        }, "登录中...")).json();
+        if (d.error) alert(d.error);
+        else showApp(d.username);
     }
 
-    function logoutUser(){ fetch("/logout").then(()=>location.reload()); }
+    function logoutUser() {
+        fetch("/logout").then(() => location.reload());
+    }
 
-    function setEditMode(on){
-      editMode = on;
-      const app = document.getElementById("app");
-      const hint = document.getElementById("editHint");
+    function setEditMode(on) {
+        editMode = on;
+        const app = document.getElementById("app");
+        const hint = document.getElementById("editHint");
 
-      if(on){
-        if(activeSort !== "custom"){
-          activeSort = "custom";
-          document.getElementById("sortSelect").value = "custom";
-          renderListFromCache();
+        if (on) {
+            if (activeSort !== "custom") {
+                activeSort = "custom";
+                document.getElementById("sortSelect").value = "custom";
+                renderListFromCache();
+            }
+            app.classList.add("edit-mode");
+            hint.classList.add("show");
+        } else {
+            app.classList.remove("edit-mode");
+            hint.classList.remove("show");
+            stopDrag();
         }
-        app.classList.add("edit-mode");
-        hint.classList.add("show");
-      }else{
-        app.classList.remove("edit-mode");
-        hint.classList.remove("show");
-        stopDrag();
-      }
     }
 
-    async function addFund(){
-      const c = code.value.trim();
-      const p = parseFloat(price.value);
-      const a = parseFloat(amount.value);
+    async function addFund() {
+        const c = code.value.trim();
+        const p = parseFloat(price.value);
+        const a = parseFloat(amount.value);
 
-      if(!c) return alert("请输入基金代码");
-      if(isNaN(p) || p<=0) return alert("请输入正确的买入价格");
-      if(isNaN(a) || a<=0) return alert("请输入正确的份额");
+        if (!c) return alert("请输入基金代码");
+        if (isNaN(p) || p <= 0) return alert("请输入正确的买入价格");
+        if (isNaN(a) || a <= 0) return alert("请输入正确的份额");
 
-      const d = await (await fetchWithLoading("/add",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({code:c, buy_price:p, amount:a})
-      }, "添加持仓中...")).json();
+        const d = await (await fetchWithLoading("/add", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({code: c, buy_price: p, amount: a})
+        }, "添加持仓中...")).json();
 
-      if(d.error) alert(d.error);
-      else loadData();
+        if (d.error) alert(d.error);
+        else loadData();
     }
 
-    async function updatePosition(code, delta, price){
-      await fetchWithLoading("/update/" + code,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({delta, buy_price: price})
-      }, "更新持仓中...");
-      loadData();
+    async function updatePosition(code, delta, price) {
+        await fetchWithLoading("/update/" + code, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({delta, buy_price: price})
+        }, "更新持仓中...");
+        loadData();
     }
 
-    function addShares(code){
-      const n = parseFloat(prompt("加仓份额"));
-      if(!n || n<=0) return;
-      const p = parseFloat(prompt("加仓价格"));
-      if(!p || p<=0) return;
-      updatePosition(code, n, p);
-    }
-    function reduceShares(code){
-      const n = parseFloat(prompt("减仓份额"));
-      if(n>0) updatePosition(code, -n);
-    }
-    function clearShares(code, amount){
-      if(confirm("确认清仓?")) updatePosition(code, -amount);
+    function addShares(code) {
+        const n = parseFloat(prompt("加仓份额"));
+        if (!n || n <= 0) return;
+        const p = parseFloat(prompt("加仓价格"));
+        if (!p || p <= 0) return;
+        updatePosition(code, n, p);
     }
 
-    async function loadData(){
-      renderSkeletonList(6);
-
-      const data = await (await fetchWithLoading("/holdings", {}, "加载持仓中...")).json();
-
-      document.getElementById("totalAsset").innerText = data.total_asset;
-      document.getElementById("totalProfit").innerText = (data.total_profit >= 0 ? "+" : "") + data.total_profit;
-      document.getElementById("totalPercent").innerText = (data.total_percent >= 0 ? "+" : "") + data.total_percent + "%";
-      document.getElementById("todayProfit").innerText = (data.today_profit >= 0 ? "+" : "") + data.today_profit;
-
-      document.getElementById("totalProfit").className = "stat-value " + (data.total_profit >= 0 ? "up" : "down");
-      document.getElementById("totalPercent").className = "stat-value " + (data.total_percent >= 0 ? "up" : "down");
-      document.getElementById("todayProfit").className = "stat-value " + (data.today_profit >= 0 ? "up" : "down");
-
-      const est = data.today_estimate_profit;
-      const real = data.today_real_profit;
-      const extra = document.getElementById("todayExtra");
-      if(est !== undefined || real !== undefined){
-        extra.style.display = "block";
-        document.getElementById("todayEstTotal").innerText = fmtMoney(est);
-        document.getElementById("todayRealTotal").innerText = fmtMoney(real);
-        document.getElementById("todayRealUpdated").style.display = (real !== null && real !== undefined) ? "inline-flex" : "none";
-      }else{
-        extra.style.display = "none";
-      }
-
-      document.getElementById("lastUpdatedText").innerText = "⏱ " + new Date().toLocaleTimeString();
-
-      fundMap.clear();
-      (data.funds || []).forEach(f => fundMap.set(f.code, f));
-
-      const saved = orderGet();
-      if(saved && saved.length){
-        const nowCodes = (data.funds || []).map(x=>x.code);
-        const merged = [];
-        saved.forEach(c=>{ if(nowCodes.includes(c)) merged.push(c); });
-        nowCodes.forEach(c=>{ if(!merged.includes(c)) merged.push(c); });
-        orderSave(merged);
-      }else{
-        orderSave((data.funds || []).map(x=>x.code));
-      }
-
-      renderListFromCache();
-      updatePie(data.funds || []);
-      setupObserver();
+    function reduceShares(code) {
+        const n = parseFloat(prompt("减仓份额"));
+        if (n > 0) updatePosition(code, -n);
     }
 
-    async function refreshRealtime(forceAll=false, showFeedback=false){
-      if(document.getElementById("app").style.display !== "block") return;
+    function clearShares(code, amount) {
+        if (confirm("确认清仓?")) updatePosition(code, -amount);
+    }
 
-      const startTs = Date.now();
-      try{
-        setRefreshBtnLoading(true);
+    async function loadData() {
+        renderSkeletonList(6);
 
-        const data = await (await fetchSilent("/holdings")).json();
-        if(data.error){
-          document.getElementById("lastUpdatedText").innerText =
-            "⚠️ 刷新失败 " + new Date().toLocaleTimeString();
-          if(showFeedback) showToast("刷新失败", "error", data.error);
-          return;
-        }
+        const data = await (await fetchWithLoading("/holdings", {}, "加载持仓中...")).json();
 
         document.getElementById("totalAsset").innerText = data.total_asset;
         document.getElementById("totalProfit").innerText = (data.total_profit >= 0 ? "+" : "") + data.total_profit;
@@ -1167,72 +1618,133 @@
         document.getElementById("totalPercent").className = "stat-value " + (data.total_percent >= 0 ? "up" : "down");
         document.getElementById("todayProfit").className = "stat-value " + (data.today_profit >= 0 ? "up" : "down");
 
-        document.getElementById("lastUpdatedText").innerText =
-          "✅ 已刷新 " + new Date().toLocaleTimeString();
+        const est = data.today_estimate_profit;
+        const real = data.today_real_profit;
+        const extra = document.getElementById("todayExtra");
+        if (est !== undefined || real !== undefined) {
+            extra.style.display = "block";
+            document.getElementById("todayEstTotal").innerText = fmtMoney(est);
+            document.getElementById("todayRealTotal").innerText = fmtMoney(real);
+            document.getElementById("todayRealUpdated").style.display = (real !== null && real !== undefined) ? "inline-flex" : "none";
+        } else {
+            extra.style.display = "none";
+        }
 
+        document.getElementById("lastUpdatedText").innerText = "⏱ " + new Date().toLocaleTimeString();
+
+        fundMap.clear();
         (data.funds || []).forEach(f => fundMap.set(f.code, f));
 
-        const codesToUpdate = forceAll ? (data.funds || []).map(x=>x.code) : [...visibleCodes];
-        codesToUpdate.forEach(code=>{
-          const f = fundMap.get(code);
-          const card = document.getElementById("fund_" + code);
-          if(f && card) applyFundToCard(card, f);
+        const saved = orderGet();
+        if (saved && saved.length) {
+            const nowCodes = (data.funds || []).map(x => x.code);
+            const merged = [];
+            saved.forEach(c => {
+                if (nowCodes.includes(c)) merged.push(c);
+            });
+            nowCodes.forEach(c => {
+                if (!merged.includes(c)) merged.push(c);
+            });
+            orderSave(merged);
+        } else {
+            orderSave((data.funds || []).map(x => x.code));
+        }
+
+        renderListFromCache();
+        updatePie(data.funds || []);
+        setupObserver();
+    }
+
+    async function refreshRealtime(forceAll = false, showFeedback = false) {
+        if (document.getElementById("app").style.display !== "block") return;
+
+        const startTs = Date.now();
+        try {
+            setRefreshBtnLoading(true);
+
+            const data = await (await fetchSilent("/holdings")).json();
+            if (data.error) {
+                document.getElementById("lastUpdatedText").innerText =
+                    "⚠️ 刷新失败 " + new Date().toLocaleTimeString();
+                if (showFeedback) showToast("刷新失败", "error", data.error);
+                return;
+            }
+
+            document.getElementById("totalAsset").innerText = data.total_asset;
+            document.getElementById("totalProfit").innerText = (data.total_profit >= 0 ? "+" : "") + data.total_profit;
+            document.getElementById("totalPercent").innerText = (data.total_percent >= 0 ? "+" : "") + data.total_percent + "%";
+            document.getElementById("todayProfit").innerText = (data.today_profit >= 0 ? "+" : "") + data.today_profit;
+
+            document.getElementById("totalProfit").className = "stat-value " + (data.total_profit >= 0 ? "up" : "down");
+            document.getElementById("totalPercent").className = "stat-value " + (data.total_percent >= 0 ? "up" : "down");
+            document.getElementById("todayProfit").className = "stat-value " + (data.today_profit >= 0 ? "up" : "down");
+
+            document.getElementById("lastUpdatedText").innerText =
+                "✅ 已刷新 " + new Date().toLocaleTimeString();
+
+            (data.funds || []).forEach(f => fundMap.set(f.code, f));
+
+            const codesToUpdate = forceAll ? (data.funds || []).map(x => x.code) : [...visibleCodes];
+            codesToUpdate.forEach(code => {
+                const f = fundMap.get(code);
+                const card = document.getElementById("fund_" + code);
+                if (f && card) applyFundToCard(card, f);
+            });
+
+            updatePie(data.funds || []);
+
+            if (showFeedback) {
+                const ms = Date.now() - startTs;
+                showToast("刷新成功", "success", `${ms}ms`);
+            }
+        } catch (e) {
+            document.getElementById("lastUpdatedText").innerText =
+                "⚠️ 刷新失败 " + new Date().toLocaleTimeString();
+            if (showFeedback) showToast("刷新失败", "error", String(e));
+        } finally {
+            setRefreshBtnLoading(false);
+        }
+    }
+
+    function getViewCodes() {
+        const search = (document.getElementById("searchInput").value || "").trim().toLowerCase();
+        const order = orderGet() || [...fundMap.keys()];
+
+        let arr = order.filter(code => {
+            const f = fundMap.get(code);
+            if (!f) return false;
+
+            const key = (String(f.name || "") + " " + String(f.code || "")).toLowerCase();
+            if (search && !key.includes(search)) return false;
+
+            if (activeFilter === "up") return (parseFloat(f.profit || 0) >= 0);
+            if (activeFilter === "down") return (parseFloat(f.profit || 0) < 0);
+            if (activeFilter === "closed") return (f.market_status === "closed");
+            if (activeFilter === "updated") return isUpdated(f);
+            return true;
         });
 
-        updatePie(data.funds || []);
-
-        if(showFeedback){
-          const ms = Date.now() - startTs;
-          showToast("刷新成功", "success", `${ms}ms`);
+        if (activeSort !== "custom") {
+            const val = (f) => {
+                if (activeSort === "holding_desc") return parseFloat(f.holding || 0);
+                if (activeSort === "profit_desc") return parseFloat(f.profit || 0);
+                if (activeSort === "percent_desc") return parseFloat(f.percent || 0);
+                if (activeSort === "today_est_desc") return parseFloat(f.today_estimate_profit ?? -Infinity);
+                if (activeSort === "today_real_desc") return parseFloat(f.today_real_profit ?? -Infinity);
+                return 0;
+            };
+            arr.sort((a, b) => val(fundMap.get(b)) - val(fundMap.get(a)));
         }
-      }catch(e){
-        document.getElementById("lastUpdatedText").innerText =
-          "⚠️ 刷新失败 " + new Date().toLocaleTimeString();
-        if(showFeedback) showToast("刷新失败", "error", String(e));
-      }finally{
-        setRefreshBtnLoading(false);
-      }
+        return arr;
     }
 
-    function getViewCodes(){
-      const search = (document.getElementById("searchInput").value || "").trim().toLowerCase();
-      const order = orderGet() || [...fundMap.keys()];
-
-      let arr = order.filter(code=>{
-        const f = fundMap.get(code);
-        if(!f) return false;
-
-        const key = (String(f.name||"") + " " + String(f.code||"")).toLowerCase();
-        if(search && !key.includes(search)) return false;
-
-        if(activeFilter === "up") return (parseFloat(f.profit||0) >= 0);
-        if(activeFilter === "down") return (parseFloat(f.profit||0) < 0);
-        if(activeFilter === "closed") return (f.market_status === "closed");
-        if(activeFilter === "updated") return isUpdated(f);
-        return true;
-      });
-
-      if(activeSort !== "custom"){
-        const val = (f)=>{
-          if(activeSort === "holding_desc") return parseFloat(f.holding||0);
-          if(activeSort === "profit_desc") return parseFloat(f.profit||0);
-          if(activeSort === "percent_desc") return parseFloat(f.percent||0);
-          if(activeSort === "today_est_desc") return parseFloat(f.today_estimate_profit ?? -Infinity);
-          if(activeSort === "today_real_desc") return parseFloat(f.today_real_profit ?? -Infinity);
-          return 0;
-        };
-        arr.sort((a,b)=> val(fundMap.get(b)) - val(fundMap.get(a)));
-      }
-      return arr;
-    }
-
-    function renderSkeletonList(n){
-      const list = document.getElementById("list");
-      list.innerHTML = "";
-      for(let i=0;i<n;i++){
-        const sk = document.createElement("div");
-        sk.className = "fund-card";
-        sk.innerHTML = `
+    function renderSkeletonList(n) {
+        const list = document.getElementById("list");
+        list.innerHTML = "";
+        for (let i = 0; i < n; i++) {
+            const sk = document.createElement("div");
+            sk.className = "fund-card";
+            sk.innerHTML = `
           <div style="padding:14px;">
             <div class="skeleton" style="height:16px; width:62%; margin-bottom:10px;"></div>
             <div class="skeleton" style="height:12px; width:48%; margin-bottom:8px;"></div>
@@ -1242,59 +1754,60 @@
               <div class="skeleton" style="height:34px; flex:1;"></div>
             </div>
           </div>`;
-        list.appendChild(sk);
-      }
+            list.appendChild(sk);
+        }
     }
 
-    function renderListFromCache(){
-      const list = document.getElementById("list");
-      const codes = getViewCodes();
-      document.getElementById("resultCount").innerText = `共 ${codes.length} 条`;
+    function renderListFromCache() {
+        const list = document.getElementById("list");
+        const codes = getViewCodes();
+        document.getElementById("resultCount").innerText = `共 ${codes.length} 条`;
 
-      // ✅ 关键：每次 render 递增版本号，旧的 chunk 直接失效
-      const myVersion = ++renderVersion;
+        // ✅ 关键：每次 render 递增版本号，旧的 chunk 直接失效
+        const myVersion = ++renderVersion;
 
-      list.innerHTML = "";
-      if(codes.length === 0){
-        list.innerHTML = `<div class="loading">没有匹配的持仓</div>`;
-        setupObserver();
-        return;
-      }
-
-      const chunkSize = 10;
-      let idx = 0;
-
-      function chunk(){
-        // ✅ 如果期间又触发了新的 render，这个旧任务直接停止
-        if(myVersion !== renderVersion) return;
-
-        const end = Math.min(idx + chunkSize, codes.length);
-        for(; idx < end; idx++){
-          if(myVersion !== renderVersion) return;
-          const code = codes[idx];
-          const f = fundMap.get(code);
-          if(!f) continue;
-          list.appendChild(buildFundCard(f));
+        list.innerHTML = "";
+        if (codes.length === 0) {
+            list.innerHTML = `<div class="loading">没有匹配的持仓</div>`;
+            setupObserver();
+            return;
         }
 
-        if(idx < codes.length){
-          requestAnimationFrame(chunk);
-        }else{
-          setupObserver();
+        const chunkSize = 10;
+        let idx = 0;
+
+        function chunk() {
+            // ✅ 如果期间又触发了新的 render，这个旧任务直接停止
+            if (myVersion !== renderVersion) return;
+
+            const end = Math.min(idx + chunkSize, codes.length);
+            for (; idx < end; idx++) {
+                if (myVersion !== renderVersion) return;
+                const code = codes[idx];
+                const f = fundMap.get(code);
+                if (!f) continue;
+                list.appendChild(buildFundCard(f));
+            }
+
+            if (idx < codes.length) {
+                requestAnimationFrame(chunk);
+            } else {
+                setupObserver();
+            }
         }
-      }
-      requestAnimationFrame(chunk);
+
+        requestAnimationFrame(chunk);
     }
 
-    function buildFundCard(f){
-      const div = document.createElement("div");
-      div.className = "fund-card";
-      div.id = "fund_" + f.code;
-      div.dataset.code = f.code;
+    function buildFundCard(f) {
+        const div = document.createElement("div");
+        div.className = "fund-card";
+        div.id = "fund_" + f.code;
+        div.dataset.code = f.code;
 
-      const navDate = f.nav_date || f.navDate || "—";
+        const navDate = f.nav_date || f.navDate || "—";
 
-      div.innerHTML = `
+        div.innerHTML = `
         <div class="fund-header">
           <div class="fund-header-left">
             <div class="fund-title-row">
@@ -1317,9 +1830,9 @@
           </div>
 
           <div class="fund-header-right">
-            <div class="fund-profit ${parseFloat(f.percent||0) >= 0 ? "up blink" : "down blink"}">
+            <div class="fund-profit ${parseFloat(f.percent || 0) >= 0 ? "up blink" : "down blink"}">
               <span class="mono fp">${f.profit}</span>
-              <span class="small mono">(${parseFloat(f.percent||0) >= 0 ? "+" : ""}${f.percent}%)</span>
+              <span class="small mono">(${parseFloat(f.percent || 0) >= 0 ? "+" : ""}${f.percent}%)</span>
             </div>
             <span class="arrow">▶</span>
           </div>
@@ -1342,136 +1855,140 @@
         </div>
       `;
 
-      const header = div.querySelector(".fund-header");
-      const body = div.querySelector(".fund-body");
-      const arrow = div.querySelector(".arrow");
+        const header = div.querySelector(".fund-header");
+        const body = div.querySelector(".fund-body");
+        const arrow = div.querySelector(".arrow");
 
-      header.addEventListener("click", ()=>{
-        if(editMode || dragging) return;
-        const open = body.classList.contains("open");
-        if(open){
-          body.classList.remove("open");
-          arrow.classList.remove("open");
-        }else{
-          body.classList.add("open");
-          arrow.classList.add("open");
-          loadHistory(f.code, getActivePeriod(f.code));
-        }
-      });
-
-      attachPressToDrag(div, header);
-      return div;
-    }
-
-    function applyFundToCard(card, f){
-      const profitEl = card.querySelector(".fp");
-      if(profitEl) profitEl.innerText = f.profit;
-
-      const fpWrap = card.querySelector(".fund-profit");
-      if(fpWrap){
-        fpWrap.className = "fund-profit " + (parseFloat(f.percent||0) >= 0 ? "up blink" : "down blink");
-        fpWrap.querySelector(".small").innerText = `(${parseFloat(f.percent||0) >= 0 ? "+" : ""}${f.percent}%)`;
-      }
-
-      const holdingEl = card.querySelector(".holding");
-      if(holdingEl) holdingEl.innerText = f.holding;
-
-      const currentEl = card.querySelector(".realtime");
-      if(currentEl) currentEl.innerText = f.current;
-
-      const navDateEl = card.querySelector(".nav-date");
-      if(navDateEl) navDateEl.innerText = (f.nav_date || f.navDate || "—");
-
-      const titleRow = card.querySelector(".fund-title-row");
-      const oldBadge = titleRow ? titleRow.querySelector(".badge") : null;
-      if(oldBadge) oldBadge.outerHTML = badgeFor(f);
-
-      const est = card.querySelector(".today-estimate-wrap");
-      const real = card.querySelector(".today-real-wrap");
-      if(est) est.innerHTML = estimateRowHtml(f);
-      if(real) real.innerHTML = realRowHtml(f);
-    }
-
-    function getActivePeriod(code){
-      const box = document.getElementById("period_" + code);
-      if(!box) return "3m";
-      for(const btn of box.children){
-        if(btn.classList.contains("active")){
-          return btn.innerText.replace(/[^\d]/g,'') + 'm';
-        }
-      }
-      return "3m";
-    }
-    function changePeriod(code, period, btn){
-      const box = document.getElementById("period_" + code);
-      [...box.children].forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      const chartDiv = document.getElementById("fund_" + code).querySelector(".fund-body");
-      if(chartDiv.classList.contains("open")) loadHistory(code, period);
-    }
-
-    async function loadHistory(code, period){
-      const data = await (await fetchWithLoading(`/history/${code}/${period}`, {}, "加载历史数据中...")).json();
-      if(!data.length) return;
-
-      const canvas = document.getElementById("chart_" + code);
-      const ctx = canvas.getContext("2d");
-      if(chartCache[code]) chartCache[code].destroy();
-
-      const first = data[0].value, last = data[data.length - 1].value, isUp = last >= first;
-      const gradient = ctx.createLinearGradient(0,0,0,200);
-      gradient.addColorStop(0, isUp ? "rgba(239,68,68,0.35)" : "rgba(34,197,94,0.30)");
-      gradient.addColorStop(1, "rgba(0,0,0,0)");
-
-      chartCache[code] = new Chart(ctx,{
-        type:'line',
-        data:{
-          labels: data.map(d=>d.date),
-          datasets:[{
-            data: data.map(d=>d.value),
-            borderColor: isUp ? "#ef4444" : "#22c55e",
-            backgroundColor: gradient,
-            fill:true,
-            tension:0.3,
-            pointRadius:0
-          }]
-        },
-        options:{
-          plugins:{legend:{display:false}},
-          scales:{x:{display:false}},
-          animation:{duration:400}
-        }
-      });
-    }
-
-    function updatePie(funds){
-      if(!funds || !funds.length) return;
-      if(pieChart) pieChart.destroy();
-      pieChart = new Chart(document.getElementById("pieChart"),{
-        type:'doughnut',
-        data:{
-          labels: funds.map(f=>f.name),
-          datasets:[{data: funds.map(f=>f.current * f.amount)}]
-        },
-        options:{plugins:{legend:{labels:{color:"rgba(241,245,249,0.9)"}}}}
-      });
-    }
-
-    function setupObserver(){
-      if(observer){ observer.disconnect(); observer = null; }
-      visibleCodes.clear();
-
-      observer = new IntersectionObserver((entries)=>{
-        entries.forEach(entry=>{
-          const card = entry.target;
-          const code = card.dataset.code;
-          if(!code) return;
-          if(entry.isIntersecting) visibleCodes.add(code);
-          else visibleCodes.delete(code);
+        header.addEventListener("click", () => {
+            if (editMode || dragging) return;
+            const open = body.classList.contains("open");
+            if (open) {
+                body.classList.remove("open");
+                arrow.classList.remove("open");
+            } else {
+                body.classList.add("open");
+                arrow.classList.add("open");
+                loadHistory(f.code, getActivePeriod(f.code));
+            }
         });
-      }, {root:null, rootMargin:"200px 0px", threshold:0.05});
 
-      document.querySelectorAll(".fund-card[data-code]").forEach(card=>observer.observe(card));
+        attachPressToDrag(div, header);
+        return div;
+    }
+
+    function applyFundToCard(card, f) {
+        const profitEl = card.querySelector(".fp");
+        if (profitEl) profitEl.innerText = f.profit;
+
+        const fpWrap = card.querySelector(".fund-profit");
+        if (fpWrap) {
+            fpWrap.className = "fund-profit " + (parseFloat(f.percent || 0) >= 0 ? "up blink" : "down blink");
+            fpWrap.querySelector(".small").innerText = `(${parseFloat(f.percent || 0) >= 0 ? "+" : ""}${f.percent}%)`;
+        }
+
+        const holdingEl = card.querySelector(".holding");
+        if (holdingEl) holdingEl.innerText = f.holding;
+
+        const currentEl = card.querySelector(".realtime");
+        if (currentEl) currentEl.innerText = f.current;
+
+        const navDateEl = card.querySelector(".nav-date");
+        if (navDateEl) navDateEl.innerText = (f.nav_date || f.navDate || "—");
+
+        const titleRow = card.querySelector(".fund-title-row");
+        const oldBadge = titleRow ? titleRow.querySelector(".badge") : null;
+        if (oldBadge) oldBadge.outerHTML = badgeFor(f);
+
+        const est = card.querySelector(".today-estimate-wrap");
+        const real = card.querySelector(".today-real-wrap");
+        if (est) est.innerHTML = estimateRowHtml(f);
+        if (real) real.innerHTML = realRowHtml(f);
+    }
+
+    function getActivePeriod(code) {
+        const box = document.getElementById("period_" + code);
+        if (!box) return "3m";
+        for (const btn of box.children) {
+            if (btn.classList.contains("active")) {
+                return btn.innerText.replace(/[^\d]/g, '') + 'm';
+            }
+        }
+        return "3m";
+    }
+
+    function changePeriod(code, period, btn) {
+        const box = document.getElementById("period_" + code);
+        [...box.children].forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const chartDiv = document.getElementById("fund_" + code).querySelector(".fund-body");
+        if (chartDiv.classList.contains("open")) loadHistory(code, period);
+    }
+
+    async function loadHistory(code, period) {
+        const data = await (await fetchWithLoading(`/history/${code}/${period}`, {}, "加载历史数据中...")).json();
+        if (!data.length) return;
+
+        const canvas = document.getElementById("chart_" + code);
+        const ctx = canvas.getContext("2d");
+        if (chartCache[code]) chartCache[code].destroy();
+
+        const first = data[0].value, last = data[data.length - 1].value, isUp = last >= first;
+        const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+        gradient.addColorStop(0, isUp ? "rgba(239,68,68,0.35)" : "rgba(34,197,94,0.30)");
+        gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+        chartCache[code] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(d => d.date),
+                datasets: [{
+                    data: data.map(d => d.value),
+                    borderColor: isUp ? "#ef4444" : "#22c55e",
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                plugins: {legend: {display: false}},
+                scales: {x: {display: false}},
+                animation: {duration: 400}
+            }
+        });
+    }
+
+    function updatePie(funds) {
+        if (!funds || !funds.length) return;
+        if (pieChart) pieChart.destroy();
+        pieChart = new Chart(document.getElementById("pieChart"), {
+            type: 'doughnut',
+            data: {
+                labels: funds.map(f => f.name),
+                datasets: [{data: funds.map(f => f.current * f.amount)}]
+            },
+            options: {plugins: {legend: {labels: {color: "rgba(241,245,249,0.9)"}}}}
+        });
+    }
+
+    function setupObserver() {
+        if (observer) {
+            observer.disconnect();
+            observer = null;
+        }
+        visibleCodes.clear();
+
+        observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const card = entry.target;
+                const code = card.dataset.code;
+                if (!code) return;
+                if (entry.isIntersecting) visibleCodes.add(code);
+                else visibleCodes.delete(code);
+            });
+        }, {root: null, rootMargin: "200px 0px", threshold: 0.05});
+
+        document.querySelectorAll(".fund-card[data-code]").forEach(card => observer.observe(card));
     }
 
     // ===== 拖拽锁滚动 + 自动滚动 =====
@@ -1479,182 +1996,186 @@
     let autoScrollRaf = null;
     let lastPointerY = 0;
 
-    function lockScroll(){
-      _scrollYBeforeDrag = window.scrollY || 0;
-      document.body.classList.add("dragging");
-      document.body.style.top = `-${_scrollYBeforeDrag}px`;
-    }
-    function unlockScroll(){
-      document.body.classList.remove("dragging");
-      const top = document.body.style.top;
-      document.body.style.top = "";
-      const y = top ? -parseInt(top, 10) : _scrollYBeforeDrag;
-      window.scrollTo(0, y || 0);
+    function lockScroll() {
+        _scrollYBeforeDrag = window.scrollY || 0;
+        document.body.classList.add("dragging");
+        document.body.style.top = `-${_scrollYBeforeDrag}px`;
     }
 
-    function startAutoScroll(){
-      if(autoScrollRaf) return;
-      const EDGE = 90;
-      const SPEED = 18;
+    function unlockScroll() {
+        document.body.classList.remove("dragging");
+        const top = document.body.style.top;
+        document.body.style.top = "";
+        const y = top ? -parseInt(top, 10) : _scrollYBeforeDrag;
+        window.scrollTo(0, y || 0);
+    }
 
-      function tick(){
-        if(!dragging){ autoScrollRaf = null; return; }
-        const vh = window.innerHeight;
+    function startAutoScroll() {
+        if (autoScrollRaf) return;
+        const EDGE = 90;
+        const SPEED = 18;
 
-        let dy = 0;
-        if(lastPointerY < EDGE) dy = -SPEED;
-        else if(lastPointerY > vh - EDGE) dy = SPEED;
+        function tick() {
+            if (!dragging) {
+                autoScrollRaf = null;
+                return;
+            }
+            const vh = window.innerHeight;
 
-        if(dy !== 0){
-          window.scrollBy(0, dy);
-          if(ghost){
-            const gTop = parseFloat(ghost.style.top || "0");
-            ghost.style.top = (gTop + dy) + "px";
-          }
+            let dy = 0;
+            if (lastPointerY < EDGE) dy = -SPEED;
+            else if (lastPointerY > vh - EDGE) dy = SPEED;
+
+            if (dy !== 0) {
+                window.scrollBy(0, dy);
+                if (ghost) {
+                    const gTop = parseFloat(ghost.style.top || "0");
+                    ghost.style.top = (gTop + dy) + "px";
+                }
+            }
+            autoScrollRaf = requestAnimationFrame(tick);
         }
+
         autoScrollRaf = requestAnimationFrame(tick);
-      }
-      autoScrollRaf = requestAnimationFrame(tick);
     }
-    function stopAutoScroll(){
-      if(autoScrollRaf) cancelAnimationFrame(autoScrollRaf);
-      autoScrollRaf = null;
+
+    function stopAutoScroll() {
+        if (autoScrollRaf) cancelAnimationFrame(autoScrollRaf);
+        autoScrollRaf = null;
     }
 
     // ===== 触摸拖拽排序 =====
-    function attachPressToDrag(card, header){
-      header.style.touchAction = "pan-y";
+    function attachPressToDrag(card, header) {
+        header.style.touchAction = "pan-y";
 
-      let pressStartX = 0;
-      let pressStartY = 0;
-      const MOVE_CANCEL_PX = 8;
+        let pressStartX = 0;
+        let pressStartY = 0;
+        const MOVE_CANCEL_PX = 8;
 
-      header.addEventListener("pointerdown",(e)=>{
-        if(activeSort !== "custom") return;
-        if(e.button !== undefined && e.button !== 0) return;
+        header.addEventListener("pointerdown", (e) => {
+            if (activeSort !== "custom") return;
+            if (e.button !== undefined && e.button !== 0) return;
 
-        pressStartX = e.clientX;
-        pressStartY = e.clientY;
+            pressStartX = e.clientX;
+            pressStartY = e.clientY;
 
-        clearTimeout(pressTimer);
-        pressTimer = setTimeout(()=>{
-          if(!editMode) setEditMode(true);
-          lockScroll();
-          startDrag(card, e);
-        }, 320);
-      }, {passive:true});
+            clearTimeout(pressTimer);
+            pressTimer = setTimeout(() => {
+                if (!editMode) setEditMode(true);
+                lockScroll();
+                startDrag(card, e);
+            }, 320);
+        }, {passive: true});
 
-      header.addEventListener("pointerup",()=> clearTimeout(pressTimer), {passive:true});
-      header.addEventListener("pointercancel",()=> clearTimeout(pressTimer), {passive:true});
+        header.addEventListener("pointerup", () => clearTimeout(pressTimer), {passive: true});
+        header.addEventListener("pointercancel", () => clearTimeout(pressTimer), {passive: true});
 
-      header.addEventListener("pointermove",(e)=>{
-        if(dragging) return;
-        const dx = e.clientX - pressStartX;
-        const dy = e.clientY - pressStartY;
-        if(Math.hypot(dx, dy) > MOVE_CANCEL_PX){
-          clearTimeout(pressTimer);
+        header.addEventListener("pointermove", (e) => {
+            if (dragging) return;
+            const dx = e.clientX - pressStartX;
+            const dy = e.clientY - pressStartY;
+            if (Math.hypot(dx, dy) > MOVE_CANCEL_PX) {
+                clearTimeout(pressTimer);
+            }
+        }, {passive: true});
+    }
+
+    function startDrag(card, e) {
+        if (dragging) return;
+        dragging = true;
+        dragCard = card;
+
+        const rect = card.getBoundingClientRect();
+
+        // 1) placeholder 用来占位 —— 直接替换原卡片（关键）
+        placeholder = document.createElement("div");
+        placeholder.className = "placeholder";
+        placeholder.style.height = rect.height + "px";
+
+        // ✅ 关键：用 placeholder 替换 card，让 card 不再占位
+        card.replaceWith(placeholder);
+
+        // 2) 生成 ghost（视觉上拖着走）
+        ghost = card.cloneNode(true);
+        ghost.classList.add("drag-ghost");
+        ghost.style.width = rect.width + "px";
+        ghost.style.left = rect.left + "px";
+        ghost.style.top = rect.top + "px";
+        document.body.appendChild(ghost);
+
+        offsetY = e.clientY - rect.top;
+
+        // 3) 拖拽期间 card 不在文档流里（可选：display none）
+        card.style.display = "none";
+
+        lastPointerY = e.clientY;
+        startAutoScroll();
+
+        document.addEventListener("pointermove", onDragMove, {passive: false});
+        document.addEventListener("pointerup", onDragEnd, {passive: true});
+        document.addEventListener("pointercancel", onDragEnd, {passive: true});
+    }
+
+    function onDragMove(e) {
+        if (!dragging || !ghost) return;
+        e.preventDefault();
+
+        lastPointerY = e.clientY;
+
+        const y = e.clientY - offsetY;
+        ghost.style.top = y + "px";
+
+        const cards = [...document.querySelectorAll(".fund-card[data-code]")]
+            .filter(c => c !== dragCard && c.style.visibility !== "hidden");
+
+        let inserted = false;
+        for (const c of cards) {
+            const r = c.getBoundingClientRect();
+            const mid = r.top + r.height / 2;
+            if (e.clientY < mid) {
+                c.parentNode.insertBefore(placeholder, c);
+                inserted = true;
+                break;
+            }
         }
-      }, {passive:true});
-    }
-
-    function startDrag(card, e){
-      if(dragging) return;
-      dragging = true;
-      dragCard = card;
-
-      const list = document.getElementById("list");
-      const rect = card.getBoundingClientRect();
-
-      placeholder = document.createElement("div");
-      placeholder.className = "placeholder";
-      placeholder.style.height = rect.height + "px";
-
-      // ✅ 稳定插入：先把占位插到 card 前，再把 card 放回占位后
-      list.insertBefore(placeholder, card);
-      card.parentNode.insertBefore(card, placeholder.nextSibling);
-
-      ghost = card.cloneNode(true);
-      ghost.classList.add("drag-ghost");
-      ghost.style.width = rect.width + "px";
-      ghost.style.left = rect.left + "px";
-      ghost.style.top = rect.top + "px";
-      document.body.appendChild(ghost);
-
-      offsetY = e.clientY - rect.top;
-      card.style.visibility = "hidden";
-
-      lastPointerY = e.clientY;
-      startAutoScroll();
-
-      document.addEventListener("pointermove", onDragMove, {passive:false});
-      document.addEventListener("pointerup", onDragEnd, {passive:true});
-      document.addEventListener("pointercancel", onDragEnd, {passive:true});
-    }
-
-    function onDragMove(e){
-      if(!dragging || !ghost) return;
-      e.preventDefault();
-
-      lastPointerY = e.clientY;
-
-      const y = e.clientY - offsetY;
-      ghost.style.top = y + "px";
-
-      const cards = [...document.querySelectorAll(".fund-card[data-code]")]
-        .filter(c=> c !== dragCard && c.style.visibility !== "hidden");
-
-      let inserted = false;
-      for(const c of cards){
-        const r = c.getBoundingClientRect();
-        const mid = r.top + r.height/2;
-        if(e.clientY < mid){
-          c.parentNode.insertBefore(placeholder, c);
-          inserted = true;
-          break;
+        if (!inserted) {
+            document.getElementById("list").appendChild(placeholder);
         }
-      }
-      if(!inserted){
-        document.getElementById("list").appendChild(placeholder);
-      }
     }
 
-    function onDragEnd(){
-      if(!dragging) return;
+    function onDragEnd() {
+        if (!dragging) return;
 
-      const list = document.getElementById("list");
-      list.insertBefore(dragCard, placeholder);
+        // ✅ 把卡片插回 placeholder 位置
+        placeholder.replaceWith(dragCard);
 
-      stopDrag();
-      saveCurrentDomOrder();
+        stopDrag();
+        saveCurrentDomOrder();
     }
 
-    function stopDrag(){
-      document.removeEventListener("pointermove", onDragMove);
-      document.removeEventListener("pointerup", onDragEnd);
-      document.removeEventListener("pointercancel", onDragEnd);
+    function stopDrag() {
+        document.removeEventListener("pointermove", onDragMove);
+        document.removeEventListener("pointerup", onDragEnd);
+        document.removeEventListener("pointercancel", onDragEnd);
 
-      if(dragCard) dragCard.style.visibility = "";
-      if(ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost);
-      if(placeholder && placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
+        if (dragCard) {
+            dragCard.style.display = ""; // 恢复显示
+        }
+        if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost);
 
-      ghost = null;
-      placeholder = null;
-      dragCard = null;
-      dragging = false;
+        ghost = null;
+        placeholder = null;
+        dragCard = null;
+        dragging = false;
 
-      stopAutoScroll();
-      unlockScroll();
-    }
-
-    function saveCurrentDomOrder(){
-      const codes = [...document.querySelectorAll(".fund-card[data-code]")].map(c=>c.dataset.code);
-      orderSave(codes);
+        stopAutoScroll();
+        unlockScroll();
     }
 
     // 自动刷新
-    setInterval(()=>{
-      if(document.getElementById("app").style.display === "block") refreshRealtime(false, false);
+    setInterval(() => {
+        if (document.getElementById("app").style.display === "block") refreshRealtime(false, false);
     }, 30000);
-  </script>
+</script>
 </body>
 </html>
