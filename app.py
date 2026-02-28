@@ -29,7 +29,11 @@ def today_cn():
     return now_cn().date()
 
 # ===== PostgreSQL 连接 =====
-DATABASE_URL = "postgresql://fund_manager_j5ml_user:Ph7l3aNSGQZEXAUtN6sakueJdrSJMKG9@dpg-d67kfi95pdvs73egn6mg-a.oregon-postgres.render.com/fund_manager_j5ml"
+# ✅ 优先用环境变量，没有则用你原来的连接串
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://fund_manager_j5ml_user:Ph7l3aNSGQZEXAUtN6sakueJdrSJMKG9@dpg-d67kfi95pdvs73egn6mg-a.oregon-postgres.render.com/fund_manager_j5ml"
+)
 
 def get_conn():
     if not DATABASE_URL:
@@ -198,7 +202,6 @@ def fetch_history(code):
 
 
 # ===== 今日状态/涨跌计算（增强：输出预估/实际分开） =====
-
 def _parse_ymd(s: str):
     try:
         return datetime.strptime(s, "%Y-%m-%d").date()
@@ -305,7 +308,7 @@ def compute_today_metrics(realtime: dict, history: list):
             "display_text": "估算中"
         }
 
-    # 3) 未开盘/停市：今天没有估算也没有实际
+    # 3) 未开盘/停市
     return {
         "market_status": "closed",
         "today_estimate_profit_per_share": None,
@@ -460,7 +463,22 @@ def holdings():
 
         latest_date, latest_value, _, _ = _history_latest_and_prev(history)
 
-        # current 展示逻辑（保持你之前要的修复：closed 用 history 最新）
+        # ===== ✅ 净值日：跟随 current 的来源 =====
+        # 盘中估算：显示 gztime 的日期（今天）
+        gztime = realtime.get("gztime")  # e.g. "2026-02-28 14:56"
+        gz_date = gztime[:10] if gztime and len(gztime) >= 10 else None
+
+        history_date = latest_date.strftime("%Y-%m-%d") if latest_date else None
+        jzrq = realtime.get("jzrq")  # 已公布净值日期（可能昨天）
+
+        if market_status == "open_estimate":
+            nav_date = gz_date or history_date or jzrq or "—"
+        elif market_status in ("real", "closed"):
+            nav_date = history_date or jzrq or gz_date or "—"
+        else:
+            nav_date = history_date or jzrq or gz_date or "—"
+
+        # current 展示逻辑
         if market_status == "real" and latest_value is not None:
             current = float(latest_value)
         elif market_status == "open_estimate" and current_est is not None:
@@ -479,7 +497,7 @@ def holdings():
         cost = float(buy_price) * float(amount)
         profit = asset - cost
 
-        # ===== 新增：预估/实际收益（都已经乘份额）=====
+        # 预估/实际收益（乘份额）
         est_ps = info.get("today_estimate_profit_per_share")
         real_ps = info.get("today_real_profit_per_share")
 
@@ -506,13 +524,13 @@ def holdings():
             "percent": round(profit / cost * 100, 2) if cost > 0 else 0,
             "holding": round(asset, 2),
 
-            # 原字段保留
+            # ✅ 前端 “净值日” 就读这个
+            "nav_date": nav_date,
+
             "gszzl": float(realtime.get("gszzl") or 0),
 
-            # ✅ 兼容：你现在前端用的 today_profit 仍然可用（真实优先）
             "today_profit": round(today_profit, 2),
 
-            # ✅ 新增：分开给前端展示（更直观）
             "today_estimate_percent": round(today_estimate_percent, 2) if today_estimate_percent is not None else None,
             "today_real_percent": round(today_real_percent, 2) if today_real_percent is not None else None,
             "today_estimate_profit": round(today_estimate_profit, 2) if today_estimate_profit is not None else None,
@@ -522,12 +540,13 @@ def holdings():
             "today_display": info.get("display_text")
         })
 
+    # 可选：把组合层面的预估/实际也带上（不影响你现有前端）
     return jsonify({
         "funds": funds,
         "total_asset": round(total_asset, 2),
         "total_profit": round(total_asset - total_cost, 2),
         "total_percent": round((total_asset - total_cost) / total_cost * 100, 2) if total_cost > 0 else 0,
-        "today_profit": round(total_today_profit, 2)
+        "today_profit": round(total_today_profit, 2),
     })
 
 
